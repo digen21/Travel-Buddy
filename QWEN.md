@@ -275,6 +275,122 @@ OTA Safety:
 - Does it break older app versions?
 
 
+Offline-First Mindset:
+- You design the application to work by default WITHOUT network connectivity.
+- Network access is treated as an enhancement, not a dependency.
+- The UI must never block or break due to missing internet if data was previously available.
+- Offline mode is a valid state, not an error condition.
+
+Offline-Critical Features:
+- The following must work fully offline:
+  - User profile (basic info)
+  - Previously loaded trips
+  - Trip details (itinerary, notes, dates)
+  - Saved places / bookmarks
+  - Cached images and assets
+  - Draft data and unsynced edits
+- You explicitly call out which features are online-only and why.
+
+Data Layer Design:
+- You strictly follow a 3-layer data flow:
+  UI → Local Cache → Network
+- UI NEVER waits for network to render.
+- Cached data is always shown immediately if available.
+
+Local Persistence Rules:
+- Use AsyncStorage ONLY for:
+  - Small preferences
+  - Flags
+  - Session metadata
+- Use SQLite (expo-sqlite) for:
+  - Trips
+  - Itineraries
+  - Places
+  - Cached API responses
+  - Offline action queues
+- You never store large or structured datasets in AsyncStorage.
+
+API & Cache Strategy:
+- You use TanStack Query as the API orchestration layer.
+- Queries must:
+  - Load from cache first
+  - Sync in background when online
+  - Use long staleTime for travel data
+- You avoid aggressive refetching to preserve battery and bandwidth.
+- Cached data is treated as the primary data source.
+
+Offline Write Handling (MANDATORY):
+- User actions are NEVER blocked when offline.
+- All offline mutations are saved locally immediately.
+- You maintain an offline action queue containing:
+  - Action type
+  - Payload
+  - Timestamp
+- When connectivity is restored:
+  - Actions are replayed in order
+  - Failures are handled explicitly
+- You NEVER discard user input silently.
+
+Conflict Resolution:
+- You acknowledge that conflicts can occur.
+- Default strategy:
+  - Last-write-wins for non-critical data
+  - User confirmation for destructive conflicts
+- You never hide or ignore conflicts.
+- Data safety always has priority over convenience.
+
+Network Awareness:
+- You detect connectivity changes using expo-network.
+- Background sync happens ONLY when:
+  - App is in foreground
+  - Network is stable
+- You avoid polling or aggressive retries.
+- Battery preservation is a first-class concern.
+
+Images & Assets:
+- You use expo-image with caching enabled.
+- Images for upcoming trips are preloaded when possible.
+- Cached images must be available offline.
+- Image loading failures must degrade gracefully.
+
+Maps & Location:
+- You do NOT rely on real-time GPS unless explicitly required.
+- You cache:
+  - Coordinates
+  - Metadata
+  - Last-viewed map tiles (where possible)
+- You provide static or fallback map views when offline.
+- You never keep background location running unnecessarily.
+
+Offline UX Rules:
+- You NEVER show blocking “No Internet” screens.
+- You ALWAYS show cached data if available.
+- You use subtle offline indicators (icons, banners).
+- Sync status is informative, not noisy.
+
+Battery & Resource Discipline:
+- You minimize background work.
+- You clean up listeners, timers, and subscriptions.
+- You avoid unnecessary network, GPS, and CPU usage.
+- Offline sync logic must be lifecycle-aware.
+
+Testing Requirements:
+- You assume offline scenarios WILL happen.
+- You validate:
+  - Cold app launch offline
+  - App restart offline
+  - App kill → reopen offline
+  - Sync after reconnect
+  - Conflict scenarios
+- If offline flows are not tested, the feature is considered incomplete.
+
+Engineering Responsibility:
+- You treat offline-first as a core architecture concern.
+- If a feature cannot work offline, you must explicitly justify it.
+- You refuse designs that break offline usability.
+
+
+---
 
 
 Travel Partner App Context:
