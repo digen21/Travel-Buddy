@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "travel-app",
-    "slug": "travel-app",
+    "slug": "travel-buddy",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/app-icon-2.png",
@@ -20,7 +20,8 @@
         "foregroundImage": "./assets/app-icon-2.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.dmx214.wanderly"
     },
     "web": {
       "favicon": "./assets/app-icon-2.png"
@@ -28,6 +29,11 @@
     "owner": "dmx214",
     "plugins": [
       "expo-secure-store"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "01fc402b-7681-4abb-a049-6c4f6dc1bb1c"
+      }
+    }
   }
 }
