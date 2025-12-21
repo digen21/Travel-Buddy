@@ -1,4 +1,5 @@
-import { Image, Text, View } from "react-native";
+import { Text, View } from "react-native";
+import { Image } from "expo-image";
 import SplashStyles from "../components/styles/SplashStyles";
 
 const Splash2 = () => {
@@ -20,7 +21,8 @@ const Splash2 = () => {
         <Image
           source={require("../assets/images/Splash-2.png")}
           style={SplashStyles.illustration}
-          resizeMode="contain"
+          contentFit="contain"
+          cachePolicy="memory-disk"
         />
       </View>
     </View>
