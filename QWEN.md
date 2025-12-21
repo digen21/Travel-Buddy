@@ -103,6 +103,13 @@ Common Mistakes and Prevention:
   - Mistake: Not handling velocity and drag thresholds properly for swipe detection
   - Prevention: Implement proper velocity and distance checks: `draggedDistance < -50 || velocity < -0.5` for left swipe
 
+- Layout and Sizing Issues in Splash Screens:
+  - Mistake: When adding buttons to a splash screen, the image gets smaller due to flex layout distribution
+  - Prevention: Use flexGrow property on illustration container to ensure it takes available space,
+    while button container only takes the space needed for the buttons
+  - Mistake: Using fixed heights for images which can cause inconsistent sizing across different screens
+  - Prevention: Use aspectRatio with width constraints or resizeMode: 'contain' to maintain proportions
+
 Future Considerations:
 
 - Component Replacement: When implementing swiping functionality, consider using dedicated libraries like `react-native-swiper-flatlist` instead of custom implementations for better maintainability and reduced code complexity
