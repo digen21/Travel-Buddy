@@ -1,7 +1,7 @@
 // TODO: This component will be replaced with react-native-swiper-flatlist in the future
 // See: https://www.npmjs.com/package/react-native-swiper-flatlist
 // This will reduce manual work and make the code cleaner and more maintainable
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Animated,
   Dimensions,
@@ -10,7 +10,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { COLORS } from "../constants";
+import { COLORS } from "../constants/colors";
 import { Splash1, Splash2, Splash3 } from "../screens";
 import SplashStyles from "./styles/SplashStyles";
 
@@ -95,28 +95,33 @@ const Swiper = () => {
       >
         <View style={styles.screenContainer}>
           {screens.map((ScreenComponent, index) => (
-            <View key={index} style={[styles.screen, { left: index * width }]}>
+            <View
+              key={index}
+              style={[styles.screen, { left: index * width }]}
+            >
               {memoizedScreens[index]}
             </View>
           ))}
         </View>
       </Animated.View>
 
-      {/* Dots indicator */}
-      <View style={SplashStyles.dotsContainer}>
-        {screens.map((_, index) => (
-          <View
-            key={index}
-            style={[
-              SplashStyles.dot,
-              {
-                backgroundColor:
-                  index === currentIndex ? COLORS.accent : COLORS.neutralDark,
-              },
-            ]}
-          />
-        ))}
-      </View>
+      {/* Dots indicator - hide on the last screen */}
+      {currentIndex < screens.length - 1 && (
+        <View style={SplashStyles.dotsContainer}>
+          {screens.map((_, index) => (
+            <View
+              key={index}
+              style={[
+                SplashStyles.dot,
+                {
+                  backgroundColor:
+                    index === currentIndex ? COLORS.accent : COLORS.neutralDark,
+                },
+              ]}
+            />
+          ))}
+        </View>
+      )}
     </SafeAreaView>
   );
 };

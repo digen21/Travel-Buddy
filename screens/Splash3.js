@@ -1,8 +1,22 @@
-import { Text, View } from "react-native";
 import { Image } from "expo-image";
+import { StyleSheet, Text, View } from "react-native";
+import { useAppContext } from "../contexts/AppContext";
+import PrimaryButton from "../components/PrimaryButton";
+import SecondaryButton from "../components/SecondaryButton";
 import SplashStyles from "../components/styles/SplashStyles";
+import { COLORS } from "../constants/colors";
 
 const Splash3 = () => {
+  const { navigateToAuth } = useAppContext();
+
+  const handleGetStarted = () => {
+    navigateToAuth();
+  };
+
+  const handleLogin = () => {
+    navigateToAuth();
+  };
+
   return (
     <View style={SplashStyles.container}>
       {/* App Name */}
@@ -25,8 +39,39 @@ const Splash3 = () => {
           cachePolicy="memory-disk"
         />
       </View>
+
+      {/* Buttons below the illustration */}
+      <View style={styles.buttonContainer}>
+        <PrimaryButton
+          title="Get Started"
+          onPress={handleGetStarted}
+          style={styles.button}
+        />
+        <SecondaryButton
+          title="Login"
+          onPress={handleLogin}
+          style={[styles.button, styles.secondaryButton]}
+        />
+      </View>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  buttonContainer: {
+    width: "100%",
+    paddingHorizontal: 24,
+    paddingTop: 20,
+    alignItems: "center",
+    justifyContent: "flex-end", // Align to the bottom
+  },
+  button: {
+    width: "100%",
+    marginBottom: 16,
+  },
+  secondaryButton: {
+    backgroundColor: COLORS.surface,
+  },
+});
 
 export default Splash3;
