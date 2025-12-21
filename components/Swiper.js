@@ -1,7 +1,7 @@
 // TODO: This component will be replaced with react-native-swiper-flatlist in the future
 // See: https://www.npmjs.com/package/react-native-swiper-flatlist
 // This will reduce manual work and make the code cleaner and more maintainable
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   Animated,
   Dimensions,
@@ -27,11 +27,16 @@ const Swiper = () => {
       require("../assets/images/Splash-2.png"),
       require("../assets/images/Splash-3.png"),
     ];
+
+    // Cleanup function for the effect
+    return () => {
+      // Any cleanup if needed
+    };
   }, []);
 
   const screens = [Splash1, Splash2, Splash3];
 
-  const panResponder = PanResponder.create({
+  const panResponder = React.useMemo(() => PanResponder.create({
     onStartShouldSetPanResponder: () => true,
     onMoveShouldSetPanResponder: (evt, gestureState) => {
       return Math.abs(gestureState.dx) > Math.abs(gestureState.dy) * 2;
@@ -73,7 +78,14 @@ const Swiper = () => {
         }).start();
       }
     },
-  });
+  }), [currentIndex]); // Add dependencies to prevent unnecessary re-creation
+
+  // Memoize the screens to avoid re-creation on each render
+  const memoizedScreens = screens.map((ScreenComponent, index) => (
+    <React.Fragment key={index}>
+      <ScreenComponent />
+    </React.Fragment>
+  ));
 
   return (
     <SafeAreaView style={styles.container}>
@@ -84,7 +96,7 @@ const Swiper = () => {
         <View style={styles.screenContainer}>
           {screens.map((ScreenComponent, index) => (
             <View key={index} style={[styles.screen, { left: index * width }]}>
-              <ScreenComponent />
+              {memoizedScreens[index]}
             </View>
           ))}
         </View>
@@ -130,4 +142,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Swiper;
+export default React.memo(Swiper);

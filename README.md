@@ -1,12 +1,13 @@
 # Travel App
 
-A modern, cross-platform travel companion application built with React Native and Expo, designed to help travelers plan, organize, and enjoy their trips seamlessly across iOS, Android, and web platforms.
+A modern, cross-platform travel companion application built with React Native and Expo, designed to help travelers plan, organize, and enjoy their trips seamlessly across iOS and Android platforms.
 
 ## Features
 
-- Cross-platform compatibility (iOS, Android, Web)
+- Cross-platform compatibility (iOS, Android)
 - Intuitive trip planning and organization
 - Offline-friendly design
+- Optimized bundle size for faster downloads
 - Modern UI with consistent experience across platforms
 - Secure data storage using Expo SecureStore
 - Location services integration
@@ -23,6 +24,7 @@ A modern, cross-platform travel companion application built with React Native an
 - **TypeScript**: Type-safe development
 - **AsyncStorage**: Local data persistence
 - **Expo SecureStore**: Secure data storage
+- **Nativewind**: Tailwind CSS for React Native
 - **React Native Vector Icons**: Iconography
 
 ## Prerequisites
@@ -64,12 +66,9 @@ For mobile device testing:
    ```bash
    # For iOS (requires macOS)
    npm run ios
-   
+
    # For Android
    npm run android
-   
-   # For web
-   npm run web
    ```
 
 ## Project Structure
@@ -97,8 +96,17 @@ travel-app/
 - `npm start`: Starts the development server
 - `npm run android`: Runs the app on Android device/emulator
 - `npm run ios`: Runs the app on iOS simulator/device
-- `npm run web`: Runs the app in web browser
 - `expo start`: Alternative way to start development server
+
+## Build Size Optimization
+
+This app has been optimized to reduce bundle size and improve download times:
+
+- Removed web-specific dependencies (`react-dom`, `react-native-web`)
+- Removed unused app icons and web favicon
+- Removed empty directories that were taking up space
+- Optimized splash screen images (should be converted to WebP format for further reduction)
+- Removed unused dependencies that weren't being used in the current implementation
 
 ## Development Guidelines
 
@@ -129,11 +137,6 @@ travel-app/
 - Edge-to-edge display enabled
 - Material Design principles followed
 - Optimized for different screen sizes and densities
-
-### Web
-- Responsive design for different screen sizes
-- Progressive Web App (PWA) features
-- Browser compatibility maintained
 
 ## Deployment
 

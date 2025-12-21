@@ -8,7 +8,7 @@ const SplashStyles = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "center",
     paddingHorizontal: 20,
-    paddingTop: 100,
+    paddingTop: 50,
   },
   appName: {
     fontFamily: "PlayfairDisplay",
@@ -37,6 +37,8 @@ const SplashStyles = StyleSheet.create({
   },
   illustration: {
     width: "80%",
+    height: "100%",
+    borderRadius: 10,
   },
   dotsContainer: {
     flexDirection: "row",
