@@ -4,7 +4,7 @@ import { COLORS } from "../../constants";
 const SplashStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.splashBackground,
+    backgroundColor: COLORS.splashBackground2,
     justifyContent: "flex-start",
     alignItems: "center",
     paddingHorizontal: 20,
@@ -13,7 +13,7 @@ const SplashStyles = StyleSheet.create({
   appName: {
     fontFamily: "PlayfairDisplay",
     fontSize: 30,
-    fontWeight: "700",
+    fontWeight: "600",
     color: COLORS.splashAppName,
     textAlign: "center",
   },
@@ -30,13 +30,14 @@ const SplashStyles = StyleSheet.create({
     textAlign: "center",
   },
   illustrationContainer: {
-    flex: 1,
-    justifyContent: "center",
     alignItems: "center",
     width: "100%",
+    height: "60%",
+    marginTop: 30, // Reduced gap between tagline and illustration
+    marginBottom: 10, // Add some space before the buttons
   },
   illustration: {
-    width: "80%",
+    width: "100%",
     height: "100%",
     borderRadius: 10,
   },

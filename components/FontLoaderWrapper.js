@@ -1,21 +1,35 @@
-import { useFonts } from "expo-font";
+import React, { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
-import { COLORS } from "../constants";
+import * as Font from "expo-font";
+import { COLORS } from "../constants/colors";
 
-// Wrapper component that handles font loading and passes it to the splash screen component
+// Wrapper component that handles font loading and passes it to the child components
 const FontLoaderWrapper = ({ children }) => {
-  // Load custom fonts once in the wrapper
-  const [fontsLoaded] = useFonts({
-    PlayfairDisplay: require("../assets/fonts/PlayfairDisplay-VariableFont_wght.ttf"),
-    PlayfairDisplayItalic: require("../assets/fonts/PlayfairDisplay-Italic.ttf"),
-    Inter: require("../assets/fonts/Inter-VariableFont_wght.ttf"),
-    InterItalic: require("../assets/fonts/Inter-Italic.ttf"),
-  });
+  const [fontsLoaded, setFontsLoaded] = useState(false);
+
+  useEffect(() => {
+    const loadFonts = async () => {
+      try {
+        await Font.loadAsync({
+          PlayfairDisplay: require("../assets/fonts/PlayfairDisplay-VariableFont_wght.ttf"),
+          PlayfairDisplayItalic: require("../assets/fonts/PlayfairDisplay-Italic.ttf"),
+          PlayfairDisplayBold: require("../assets/fonts/playfair-display-bold.ttf"),
+          Inter: require("../assets/fonts/Inter-VariableFont_wght.ttf"),
+          InterItalic: require("../assets/fonts/Inter-Italic.ttf"),
+        });
+        setFontsLoaded(true);
+      } catch (error) {
+        console.error("Error loading fonts:", error);
+      }
+    };
+
+    loadFonts();
+  }, []);
 
   if (!fontsLoaded) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={COLORS.splashAccentFF} />
+        <ActivityIndicator size="large" color={COLORS.splashAccent} />
       </View>
     );
   }
