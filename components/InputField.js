@@ -14,6 +14,8 @@ const InputField = ({
   value,
   onChangeText,
   icon,
+  rightIcon,
+  onRightIconPress,
   error,
   disabled = false,
   secureTextEntry = false,
@@ -62,6 +64,15 @@ const InputField = ({
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
         />
+        {rightIcon && (
+          <Ionicons
+            name={rightIcon}
+            size={18}
+            color={disabled ? COLORS.textDisabled : COLORS.inputIconColor}
+            style={styles.rightIcon}
+            onPress={onRightIconPress}
+          />
+        )}
       </View>
       {error && <Text style={styles.errorText}>{error}</Text>}
     </View>
@@ -98,6 +109,9 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginRight: 10,
+  },
+  rightIcon: {
+    marginLeft: 10,
   },
   inputText: {
     flex: 1,

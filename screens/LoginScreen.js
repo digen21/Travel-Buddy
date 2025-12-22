@@ -22,14 +22,15 @@ const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = () => {
     setIsLoading(true);
     // Simulate login process
     setTimeout(() => {
       setIsLoading(false);
-      Alert.alert("Login", "Login functionality would be implemented here");
-      // navigation.navigate('Home'); // Navigate to home after successful login
+      // For now, navigate to OTP screen and pass the email
+      navigation.navigate("OTP", { email: email });
     }, 1500);
   };
 
@@ -79,7 +80,9 @@ const LoginScreen = () => {
                     value={password}
                     onChangeText={setPassword}
                     icon="lock-closed-outline"
-                    secureTextEntry
+                    rightIcon={showPassword ? "eye-off" : "eye"}
+                    onRightIconPress={() => setShowPassword(!showPassword)}
+                    secureTextEntry={!showPassword}
                     style={styles.inputMarginTop}
                   />
                 </View>

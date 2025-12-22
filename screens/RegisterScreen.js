@@ -23,6 +23,8 @@ const RegisterScreen = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleRegister = () => {
     if (password !== confirmPassword) {
@@ -34,11 +36,8 @@ const RegisterScreen = () => {
     // Simulate registration process
     setTimeout(() => {
       setIsLoading(false);
-      Alert.alert(
-        "Registration",
-        "Registration functionality would be implemented here"
-      );
-      // navigation.navigate('Home'); // Navigate to home after successful registration
+      // For now, navigate to OTP screen and pass the email
+      navigation.navigate("OTP", { email: email });
     }, 1500);
   };
 
@@ -90,7 +89,9 @@ const RegisterScreen = () => {
                     value={password}
                     onChangeText={setPassword}
                     icon="lock-closed-outline"
-                    secureTextEntry
+                    rightIcon={showPassword ? "eye-off" : "eye"}
+                    onRightIconPress={() => setShowPassword(!showPassword)}
+                    secureTextEntry={!showPassword}
                     style={styles.inputMarginTop}
                   />
 
@@ -100,7 +101,11 @@ const RegisterScreen = () => {
                     value={confirmPassword}
                     onChangeText={setConfirmPassword}
                     icon="lock-closed-outline"
-                    secureTextEntry
+                    rightIcon={showConfirmPassword ? "eye-off" : "eye"}
+                    onRightIconPress={() =>
+                      setShowConfirmPassword(!showConfirmPassword)
+                    }
+                    secureTextEntry={!showConfirmPassword}
                     style={styles.inputMarginTop}
                   />
                 </View>
