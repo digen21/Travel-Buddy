@@ -122,99 +122,96 @@ const OTPScreen = ({ route }) => {
   return (
     <Background style={styles.container}>
       <ImageBackgroundWrapper>
-        <KeyboardAvoidingView
+        {/* <KeyboardAvoidingView
           style={styles.container}
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 84}
+        > */}
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          scrollEnabled={false}
         >
-          <ScrollView
-            contentContainerStyle={styles.scrollContainer}
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
-            scrollEnabled={false}
-          >
-            <View style={styles.header}>
-              <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-                <Icon name="arrow-back" size={24} color={COLORS.primary} />
+          <View style={styles.header}>
+            <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+              <Icon name="arrow-back" size={24} color={COLORS.primary} />
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.content}>
+            <H1 style={styles.title}>Verification</H1>
+            <P style={styles.description}>
+              We've sent a sacred code to{" "}
+              <Text style={styles.emailText}>{email}</Text>
+            </P>
+
+            <View style={styles.otpCard}>
+              <View style={styles.otpInputContainer}>
+                {otp.map((digit, index) => (
+                  <TextInput
+                    key={index}
+                    ref={(ref) => (inputRefs.current[index] = ref)}
+                    style={[
+                      styles.otpInput,
+                      {
+                        borderColor: digit
+                          ? COLORS.otpInputActiveBorder
+                          : COLORS.otpInputBorder,
+                      },
+                    ]}
+                    value={digit}
+                    onChangeText={(value) => handleOTPChange(index, value)}
+                    maxLength={1}
+                    keyboardType="number-pad"
+                    textContentType="oneTimeCode"
+                    autoFocus={index === 0}
+                    cursorColor={COLORS.otpInputCursor}
+                    onFocus={() => {
+                      // Prevent automatic scrolling to focused input
+                    }}
+                  />
+                ))}
+              </View>
+
+              <View style={styles.timerContainer}>
+                <FontAwesome6
+                  name="stopwatch"
+                  size={16}
+                  color={COLORS.textTertiary}
+                  style={styles.timerIcon}
+                />
+                <P style={styles.timerText}>
+                  Code expires in{" "}
+                  <Text style={styles.timerMinutes}>{minutes}:</Text>
+                  <Text style={styles.timerSeconds}>{seconds}</Text>
+                </P>
+              </View>
+            </View>
+
+            <PrimaryButton
+              title="Verify & Proceed"
+              onPress={handleSubmit}
+              loading={isLoading}
+              style={styles.verifyButton}
+            />
+
+            <View style={styles.resendContainer}>
+              <P style={styles.resendText}>Didn't receive the code?</P>
+              <TouchableOpacity onPress={handleResend} disabled={isTimerActive}>
+                <P
+                  style={[
+                    styles.resendLink,
+                    isTimerActive && styles.resendLinkDisabled,
+                  ]}
+                >
+                  Resend OTP
+                </P>
               </TouchableOpacity>
             </View>
-
-            <View style={styles.content}>
-              <H1 style={styles.title}>Verification</H1>
-              <P style={styles.description}>
-                We've sent a sacred code to{" "}
-                <Text style={styles.emailText}>{email}</Text>
-              </P>
-
-              <View style={styles.otpCard}>
-                <View style={styles.otpInputContainer}>
-                  {otp.map((digit, index) => (
-                    <TextInput
-                      key={index}
-                      ref={(ref) => (inputRefs.current[index] = ref)}
-                      style={[
-                        styles.otpInput,
-                        {
-                          borderColor: digit
-                            ? COLORS.otpInputActiveBorder
-                            : COLORS.otpInputBorder,
-                        },
-                      ]}
-                      value={digit}
-                      onChangeText={(value) => handleOTPChange(index, value)}
-                      maxLength={1}
-                      keyboardType="number-pad"
-                      textContentType="oneTimeCode"
-                      autoFocus={index === 0}
-                      cursorColor={COLORS.otpInputCursor}
-                      onFocus={() => {
-                        // Prevent automatic scrolling to focused input
-                      }}
-                    />
-                  ))}
-                </View>
-
-                <View style={styles.timerContainer}>
-                  <FontAwesome6
-                    name="stopwatch"
-                    size={16}
-                    color={COLORS.textTertiary}
-                    style={styles.timerIcon}
-                  />
-                  <P style={styles.timerText}>
-                    Code expires in{" "}
-                    <Text style={styles.timerMinutes}>{minutes}:</Text>
-                    <Text style={styles.timerSeconds}>{seconds}</Text>
-                  </P>
-                </View>
-              </View>
-
-              <PrimaryButton
-                title="Verify & Proceed"
-                onPress={handleSubmit}
-                loading={isLoading}
-                style={styles.verifyButton}
-              />
-
-              <View style={styles.resendContainer}>
-                <P style={styles.resendText}>Didn't receive the code?</P>
-                <TouchableOpacity
-                  onPress={handleResend}
-                  disabled={isTimerActive}
-                >
-                  <P
-                    style={[
-                      styles.resendLink,
-                      isTimerActive && styles.resendLinkDisabled,
-                    ]}
-                  >
-                    Resend OTP
-                  </P>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
+          </View>
+        </ScrollView>
+        {/* </KeyboardAvoidingView> */}
       </ImageBackgroundWrapper>
     </Background>
   );
