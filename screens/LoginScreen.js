@@ -41,84 +41,86 @@ const LoginScreen = () => {
   return (
     <Background style={styles.container}>
       <ImageBackgroundWrapper>
-        <KeyboardAvoidingView
-          style={styles.container}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
-          <ScrollView
-            contentContainerStyle={styles.scrollContainer}
-            keyboardShouldPersistTaps="handled"
+        <View style={styles.mainContainer}>
+          <KeyboardAvoidingView
+            style={styles.keyboardView}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
           >
-            <View style={styles.content}>
-              <View style={styles.iconContainer}>
-                <Image
-                  source={require("../assets/app-icon-1.png")}
-                  style={styles.appIcon}
-                  resizeMode="contain"
-                />
-              </View>
-              <H1 style={styles.title}>Explore Ancient India</H1>
-              <P style={styles.subtitle}>
-                Sign in to continue your journey through{"\n"}history
-              </P>
-
-              <View style={styles.form}>
-                <View style={styles.inputContainer}>
-                  <InputField
-                    label="Email"
-                    placeholder="Enter your email"
-                    value={email}
-                    onChangeText={setEmail}
-                    icon="mail-outline"
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                  />
-
-                  <InputField
-                    label="Password"
-                    placeholder="Enter your password"
-                    value={password}
-                    onChangeText={setPassword}
-                    icon="lock-closed-outline"
-                    rightIcon={showPassword ? "eye-off" : "eye"}
-                    onRightIconPress={() => setShowPassword(!showPassword)}
-                    secureTextEntry={!showPassword}
-                    style={styles.inputMarginTop}
+            <ScrollView
+              contentContainerStyle={styles.scrollContainer}
+              keyboardShouldPersistTaps="handled"
+            >
+              <View style={styles.content}>
+                <View style={styles.iconContainer}>
+                  <Image
+                    source={require("../assets/app-icon-1.png")}
+                    style={styles.appIcon}
+                    resizeMode="contain"
                   />
                 </View>
-
-                <LinkText style={styles.forgotPassword}>
-                  Forgot Password?
-                </LinkText>
-
-                <PrimaryButton
-                  title="Sign In"
-                  onPress={handleLogin}
-                  loading={isLoading}
-                  style={styles.signInButton}
-                />
-
-                <View style={styles.dividerContainer}>
-                  <View style={styles.dividerLine} />
-                  <P style={styles.dividerText}>Or Continue With</P>
-                  <View style={styles.dividerLine} />
-                </View>
-
-                <SecondaryButton
-                  title="Google"
-                  onPress={() => Alert.alert("Google login selected")}
-                  style={styles.socialButton}
-                />
-
-                <P style={styles.signUpText}>
-                  Don't Have an account?{" "}
-                  <LinkText onPress={handleSignUp}>Signup</LinkText>
+                <H1 style={styles.title}>Explore Ancient India</H1>
+                <P style={styles.subtitle}>
+                  Sign in to continue your journey through{"\n"}history
                 </P>
+
+                <View style={styles.form}>
+                  <View style={styles.inputContainer}>
+                    <InputField
+                      label="Email"
+                      placeholder="Enter your email"
+                      value={email}
+                      onChangeText={setEmail}
+                      icon="mail-outline"
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                    />
+
+                    <InputField
+                      label="Password"
+                      placeholder="Enter your password"
+                      value={password}
+                      onChangeText={setPassword}
+                      icon="lock-closed-outline"
+                      rightIcon={showPassword ? "eye-off" : "eye"}
+                      onRightIconPress={() => setShowPassword(!showPassword)}
+                      secureTextEntry={!showPassword}
+                      style={styles.inputMarginTop}
+                    />
+                  </View>
+
+                  <LinkText style={styles.forgotPassword}>
+                    Forgot Password?
+                  </LinkText>
+
+                  <PrimaryButton
+                    title="Sign In"
+                    onPress={handleLogin}
+                    loading={isLoading}
+                    style={styles.signInButton}
+                  />
+
+                  <View style={styles.dividerContainer}>
+                    <View style={styles.dividerLine} />
+                    <P style={styles.dividerText}>Or Continue With</P>
+                    <View style={styles.dividerLine} />
+                  </View>
+
+                  <SecondaryButton
+                    title="Google"
+                    onPress={() => Alert.alert("Google login selected")}
+                    style={styles.socialButton}
+                  />
+
+                  <P style={styles.signUpText}>
+                    Don't Have an account?{" "}
+                    <LinkText onPress={handleSignUp}>Signup</LinkText>
+                  </P>
+                </View>
               </View>
-            </View>
-            <P style={styles.bottom}>Discover the timeless beauty of India</P>
-          </ScrollView>
-        </KeyboardAvoidingView>
+            </ScrollView>
+          </KeyboardAvoidingView>
+          <P style={styles.bottom}>Discover the timeless beauty of India</P>
+        </View>
       </ImageBackgroundWrapper>
     </Background>
   );
@@ -126,6 +128,13 @@ const LoginScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  mainContainer: {
+    flex: 1,
+    justifyContent: "space-between",
+  },
+  keyboardView: {
     flex: 1,
   },
   imageBackground: {
@@ -230,7 +239,7 @@ const styles = StyleSheet.create({
   bottom: {
     textAlign: "center",
     color: COLORS.textTertiary,
-    marginTop: 14,
+    paddingVertical: 16,
     fontSize: 14,
     fontFamily: "PlayfairDisplayItalic",
     letterSpacing: 0.5,
