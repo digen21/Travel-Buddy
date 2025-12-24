@@ -1,10 +1,10 @@
-import React from "react";
+import { Image } from "expo-image";
 import {
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-  View,
   ActivityIndicator,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { COLORS } from "../constants/colors";
 
@@ -14,13 +14,21 @@ const SecondaryButton = ({
   disabled = false,
   loading = false,
   style,
+  imgIcon,
 }) => {
   const getButtonContent = () => {
     if (loading) {
       return <ActivityIndicator size="small" color={COLORS.textPrimary} />;
     }
 
-    return <Text style={styles.text}>{title}</Text>;
+    return (
+      <View style={styles.wrapper}>
+        {imgIcon && <Image source={imgIcon} style={styles.icon} />}
+        <Text style={[styles.text, disabled && styles.disabledText]}>
+          {title}
+        </Text>
+      </View>
+    );
   };
 
   const buttonStyle = [
@@ -28,8 +36,6 @@ const SecondaryButton = ({
     disabled ? styles.disabledButton : null,
     style,
   ];
-
-  const textStyle = [styles.text, disabled ? styles.disabledText : null];
 
   return (
     <TouchableOpacity
@@ -79,6 +85,16 @@ const styles = StyleSheet.create({
   },
   disabledText: {
     color: COLORS.textTertiary,
+  },
+  wrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center", // THIS replaces textAlign:center
+  },
+  icon: {
+    width: 20,
+    height: 20,
+    marginRight: 8,
   },
 });
 

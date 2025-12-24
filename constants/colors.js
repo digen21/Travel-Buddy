@@ -9,7 +9,8 @@ export const COLORS = {
   brandOrange: "#hsla(21, 100%, 49%, 0.26)", // Brand orange color
 
   // Background Colors
-  background: "#FFF8E7", // Cream/beige background (parchment-like)
+  // background: "#FFF8E7", // Cream/beige background (parchment-like)
+  background: "#f8f7f5", // Cream/beige background (parchment-like)
   surface: "#FFFFFF", // Surface elements
   card: "#FFFFFF", // Card backgrounds
   inputBackground: "#F8F7F6", // Input field background

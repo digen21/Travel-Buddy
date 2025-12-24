@@ -16,9 +16,11 @@ import PrimaryButton from "../components/PrimaryButton";
 import SecondaryButton from "../components/SecondaryButton";
 import { H1, LinkText, P } from "../components/Typography";
 import { COLORS } from "../constants/colors";
+import { useAppContext } from "../contexts/AppContext";
 
 const LoginScreen = () => {
   const navigation = useNavigation();
+  const { navigateToAuth } = useAppContext();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -29,8 +31,10 @@ const LoginScreen = () => {
     // Simulate login process
     setTimeout(() => {
       setIsLoading(false);
-      // For now, navigate to OTP screen and pass the email
-      navigation.navigate("OTP", { email: email });
+      // After successful login, update the app state to show main app
+      // and navigate to the main app with bottom tabs
+      navigateToAuth();
+      // The app context will ensure the user stays in the authenticated flow
     }, 1500);
   };
 
@@ -109,8 +113,10 @@ const LoginScreen = () => {
                     title="Google"
                     onPress={() => Alert.alert("Google login selected")}
                     style={styles.socialButton}
+                    imgIcon={require("../assets/images/google-icon-logo-svgrepo-com.svg")}
                   />
-
+                </View>
+                <View>
                   <P style={styles.signUpText}>
                     Don't Have an account?{" "}
                     <LinkText onPress={handleSignUp}>Signup</LinkText>
