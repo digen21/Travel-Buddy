@@ -9,7 +9,7 @@ import {
   HomeScreen,
   MapScreen,
   MyTripsScreen,
-  ProfileScreen,
+  UserProfileScreen,
   TravelByScreen,
 } from "../screens";
 
@@ -32,7 +32,7 @@ const BottomTabNavigator = () => {
       <Tab.Screen name="MyTrips" component={MyTripsScreen} />
       <Tab.Screen name="ExpenseOverview" component={ExpenseOverviewScreen} />
       <Tab.Screen name="Blogs" component={BlogsScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen name="Profile" component={UserProfileScreen} />
     </Tab.Navigator>
   );
 };
