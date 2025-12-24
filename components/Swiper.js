@@ -8,25 +8,27 @@ import {
   PanResponder,
   StyleSheet,
   View,
+  TouchableOpacity,
+  Text,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import { Splash1, Splash2, Splash3 } from "../screens";
 import SplashStyles from "./styles/SplashStyles";
+import { useAppContext } from "../contexts/AppContext";
 
 const { width } = Dimensions.get("window");
 
 const Swiper = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const translateX = React.useRef(new Animated.Value(0)).current;
+  const { completeSplash } = useAppContext();
 
   // Preload all images for smooth experience
   useEffect(() => {
-    const images = [
-      require("../assets/images/Splash-1.png"),
-      require("../assets/images/Splash-2.png"),
-      require("../assets/images/Splash-3.png"),
-    ];
+    require("../assets/images/Splash-1.png");
+    require("../assets/images/Splash-2.png");
+    require("../assets/images/Splash-3.png");
 
     // Cleanup function for the effect
     return () => {
@@ -36,49 +38,53 @@ const Swiper = () => {
 
   const screens = [Splash1, Splash2, Splash3];
 
-  const panResponder = React.useMemo(() => PanResponder.create({
-    onStartShouldSetPanResponder: () => true,
-    onMoveShouldSetPanResponder: (evt, gestureState) => {
-      return Math.abs(gestureState.dx) > Math.abs(gestureState.dy) * 2;
-    },
-    onPanResponderMove: (evt, gestureState) => {
-      // Directly adjust the translation based on the current index and drag
-      const newTranslateX = -currentIndex * width + gestureState.dx;
-      translateX.setValue(newTranslateX);
-    },
-    onPanResponderRelease: (evt, gestureState) => {
-      const velocity = gestureState.vx;
-      const draggedDistance = gestureState.dx;
-      const shouldAdvance = draggedDistance < -50 || velocity < -0.5; // Swipe left
-      const shouldGoBack = draggedDistance > 50 || velocity > 0.5; // Swipe right
+  const panResponder = React.useMemo(
+    () =>
+      PanResponder.create({
+        onStartShouldSetPanResponder: () => true,
+        onMoveShouldSetPanResponder: (evt, gestureState) => {
+          return Math.abs(gestureState.dx) > Math.abs(gestureState.dy) * 2;
+        },
+        onPanResponderMove: (evt, gestureState) => {
+          // Directly adjust the translation based on the current index and drag
+          const newTranslateX = -currentIndex * width + gestureState.dx;
+          translateX.setValue(newTranslateX);
+        },
+        onPanResponderRelease: (evt, gestureState) => {
+          const velocity = gestureState.vx;
+          const draggedDistance = gestureState.dx;
+          const shouldAdvance = draggedDistance < -50 || velocity < -0.5; // Swipe left
+          const shouldGoBack = draggedDistance > 50 || velocity > 0.5; // Swipe right
 
-      let targetIndex = currentIndex;
-      if (shouldAdvance && currentIndex < screens.length - 1) {
-        targetIndex = currentIndex + 1;
-      } else if (shouldGoBack && currentIndex > 0) {
-        targetIndex = currentIndex - 1;
-      }
+          let targetIndex = currentIndex;
+          if (shouldAdvance && currentIndex < screens.length - 1) {
+            targetIndex = currentIndex + 1;
+          } else if (shouldGoBack && currentIndex > 0) {
+            targetIndex = currentIndex - 1;
+          }
 
-      if (targetIndex !== currentIndex) {
-        // Animate to the new screen
-        Animated.timing(translateX, {
-          toValue: -targetIndex * width,
-          duration: 300,
-          useNativeDriver: true,
-        }).start(() => {
-          setCurrentIndex(targetIndex);
-        });
-      } else {
-        // Bounce back to current screen
-        Animated.spring(translateX, {
-          toValue: -currentIndex * width,
-          useNativeDriver: true,
-          friction: 8,
-          tension: 100,
-        }).start();
-      }
-    },
-  }), [currentIndex]); // Add dependencies to prevent unnecessary re-creation
+          if (targetIndex !== currentIndex) {
+            // Animate to the new screen
+            Animated.timing(translateX, {
+              toValue: -targetIndex * width,
+              duration: 300,
+              useNativeDriver: true,
+            }).start(() => {
+              setCurrentIndex(targetIndex);
+            });
+          } else {
+            // Bounce back to current screen
+            Animated.spring(translateX, {
+              toValue: -currentIndex * width,
+              useNativeDriver: true,
+              friction: 8,
+              tension: 100,
+            }).start();
+          }
+        },
+      }),
+    [currentIndex, completeSplash]
+  ); // Add dependencies to prevent unnecessary re-creation
 
   // Memoize the screens to avoid re-creation on each render
   const memoizedScreens = screens.map((ScreenComponent, index) => (
@@ -86,6 +92,11 @@ const Swiper = () => {
       <ScreenComponent />
     </React.Fragment>
   ));
+
+  // Function to navigate to auth screens when user completes splash
+  const handleComplete = () => {
+    completeSplash();
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -95,11 +106,17 @@ const Swiper = () => {
       >
         <View style={styles.screenContainer}>
           {screens.map((ScreenComponent, index) => (
-            <View
-              key={index}
-              style={[styles.screen, { left: index * width }]}
-            >
+            <View key={index} style={[styles.screen, { left: index * width }]}>
               {memoizedScreens[index]}
+              {/* Show Get Started button on the last screen */}
+              {index === screens.length - 1 && (
+                <TouchableOpacity
+                  style={styles.getStartedButton}
+                  onPress={handleComplete}
+                >
+                  <Text style={styles.getStartedButtonText}>Get Started</Text>
+                </TouchableOpacity>
+              )}
             </View>
           ))}
         </View>
@@ -144,6 +161,22 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 0,
     bottom: 0,
+  },
+  getStartedButton: {
+    position: "absolute",
+    bottom: 100, // Position it above the dots indicator
+    left: "50%",
+    transform: [{ translateX: -75 }], // Center the button
+    backgroundColor: COLORS.accent,
+    paddingHorizontal: 30,
+    paddingVertical: 15,
+    borderRadius: 25,
+    zIndex: 10,
+  },
+  getStartedButtonText: {
+    color: COLORS.surface,
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 

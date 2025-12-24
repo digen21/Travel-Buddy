@@ -15,16 +15,17 @@ import PrimaryButton from "../components/PrimaryButton";
 import SecondaryButton from "../components/SecondaryButton";
 import { H1, LinkText, P } from "../components/Typography";
 import { COLORS } from "../constants/colors";
+import { useAppContext } from "../contexts/AppContext";
 
 const RegisterScreen = () => {
   const navigation = useNavigation();
+  const { navigateToAuth } = useAppContext();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleRegister = () => {
     if (password !== confirmPassword) {
@@ -36,13 +37,15 @@ const RegisterScreen = () => {
     // Simulate registration process
     setTimeout(() => {
       setIsLoading(false);
-      // For now, navigate to OTP screen and pass the email
-      navigation.navigate("OTP", { email: email });
+      // After successful registration, update the app state to show main app
+      // and navigate to the main app with bottom tabs
+      navigateToAuth();
+      // The app context will ensure the user stays in the authenticated flow
     }, 1500);
   };
 
   const handleBackToLogin = () => {
-    navigation.goBack();
+    navigation.navigate("Login");
   };
 
   return (
@@ -94,7 +97,7 @@ const RegisterScreen = () => {
                     secureTextEntry={!showPassword}
                     style={styles.inputMarginTop}
                   />
-
+                  {/* 
                   <InputField
                     label="Confirm Password"
                     placeholder="Confirm your password"
@@ -107,7 +110,7 @@ const RegisterScreen = () => {
                     }
                     secureTextEntry={!showConfirmPassword}
                     style={styles.inputMarginTop}
-                  />
+                  /> */}
                 </View>
 
                 <PrimaryButton
@@ -117,15 +120,36 @@ const RegisterScreen = () => {
                   style={styles.signUpButton}
                 />
 
-                <SecondaryButton
+                {/* <SecondaryButton
                   title="Back to Login"
                   onPress={handleBackToLogin}
                   style={styles.backButton}
+                /> */}
+
+                <View style={styles.dividerContainer}>
+                  <View style={styles.dividerLine} />
+                  <P style={styles.dividerText}>Or Continue With</P>
+                  <View style={styles.dividerLine} />
+                </View>
+
+                <SecondaryButton
+                  title="Google"
+                  onPress={() => Alert.alert("Google login selected")}
+                  style={styles.socialButton}
+                  imgIcon={require("../assets/images/google-icon-logo-svgrepo-com.svg")}
                 />
+              </View>
+              <View>
+                <P style={styles.signInText}>
+                  Already have an account?{" "}
+                  <LinkText onPress={handleBackToLogin} style={styles.linkText}>
+                    Login
+                  </LinkText>
+                </P>
 
                 <P style={styles.termsText}>
-                  By signing up, you agree to our <LinkText>Terms</LinkText> and{" "}
-                  <LinkText>Privacy Policy</LinkText>
+                  By Registering, you agree to our Terms of Service and Privacy
+                  Policy related to heritage preservation.
                 </P>
               </View>
             </View>
@@ -154,6 +178,21 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 24,
     justifyContent: "center",
+  },
+  dividerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 20,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: COLORS.inputBorder,
+  },
+  dividerText: {
+    marginHorizontal: 16,
+    color: COLORS.textTertiary,
+    fontSize: 14,
   },
   title: {
     textAlign: "center",
@@ -201,9 +240,18 @@ const styles = StyleSheet.create({
   },
   termsText: {
     textAlign: "center",
-    marginTop: 24,
+    marginTop: 30,
     fontSize: 12,
     color: COLORS.textSecondary,
+    width: "100%",
+    alignSelf: "center",
+  },
+  signInText: {
+    textAlign: "center",
+    marginTop: 28,
+  },
+  linkText: {
+    fontSize: 14,
   },
 });
 

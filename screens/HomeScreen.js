@@ -1,25 +1,14 @@
-import { useNavigation } from "@react-navigation/native";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import Background from "../components/Background";
 import { P } from "../components/Typography";
 import { COLORS } from "../constants/colors";
 
 const HomeScreen = () => {
-  const navigation = useNavigation();
-
   return (
     <Background style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.title}>Welcome!</Text>
-        <P style={styles.subtitle}>
-          You have successfully verified your account.
-        </P>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate("Login")}
-        >
-          <Text style={styles.buttonText}>Go Back to Login</Text>
-        </TouchableOpacity>
+        <Text style={styles.title}>Home Screen</Text>
+        <P style={styles.subtitle}>Welcome to the home screen!</P>
       </View>
     </Background>
   );

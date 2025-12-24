@@ -6,42 +6,64 @@ const AppContext = createContext();
 
 // Create a provider component
 export const AppProvider = ({ children }) => {
-  const [showAuthScreens, setShowAuthScreens] = useState(null); // Set initial state to null to indicate loading
+  const [appState, setAppState] = useState(null); // null = loading, 'splash', 'auth', 'main'
 
-  // checking AsyncStorage for splash screen status on mount
   useEffect(() => {
-    const checkSplashStatus = async () => {
+    const checkAppStatus = async () => {
       try {
-        const hasSeenSplash = await AsyncStorage.getItem("hasSeenSplash");
-        // If user has seen splash before, show auth screens; otherwise, show splash
-        setShowAuthScreens(hasSeenSplash === "true");
+        // Skipping splash screens for development - always go to auth flow
+        // const hasSeenSplash = await AsyncStorage.getItem("hasSeenSplash");
+        // const isAuthenticated = await AsyncStorage.getItem("isAuthenticated");
+
+        // if (hasSeenSplash !== "true") {
+        //   // User hasn't seen splash yet
+        //   setAppState("splash");
+        // } else
+        // Skip splash screen and go directly to auth
+        // const isAuthenticated = await AsyncStorage.getItem("isAuthenticated");
+
+        // For now, always start with auth flow
+        setAppState("auth");
       } catch (error) {
-        console.error("Error reading splash status from AsyncStorage:", error);
+        console.error("Error reading app status from AsyncStorage:", error);
         // Default to showing splash screen if there's an error
-        setShowAuthScreens(false);
+        setAppState("splash");
       }
     };
 
-    checkSplashStatus();
+    checkAppStatus();
   }, []);
 
   const navigateToAuth = async () => {
     try {
       // Mark that the user has seen the splash screen
       await AsyncStorage.setItem("hasSeenSplash", "true");
-      setShowAuthScreens(true);
+      // This function is called after authentication is complete
+      await AsyncStorage.setItem("isAuthenticated", "true");
+      setAppState("main"); // Show main app
+    } catch (error) {
+      console.error("Error saving app status to AsyncStorage:", error);
+    }
+  };
+
+  const completeSplash = async () => {
+    try {
+      // Mark that the user has seen the splash screen but not authenticated yet
+      await AsyncStorage.setItem("hasSeenSplash", "true");
+      setAppState("auth"); // Show auth screens
     } catch (error) {
       console.error("Error saving splash status to AsyncStorage:", error);
     }
   };
 
   const value = {
-    showAuthScreens,
+    appState,
     navigateToAuth,
+    completeSplash,
   };
 
-  // Don't render anything until the splash status is loaded
-  if (showAuthScreens === null) {
+  // Don't render anything until the app state is loaded
+  if (appState === null) {
     return null; // Or return a loading component if you prefer
   }
 

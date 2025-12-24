@@ -3,8 +3,6 @@ import { useNavigation } from "@react-navigation/native";
 import { useEffect, useRef, useState } from "react";
 import {
   Alert,
-  KeyboardAvoidingView,
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -18,9 +16,11 @@ import ImageBackgroundWrapper from "../components/ImageBackgroundWrapper";
 import PrimaryButton from "../components/PrimaryButton";
 import { H1, P } from "../components/Typography";
 import { COLORS } from "../constants/colors";
+import { useAppContext } from "../contexts/AppContext";
 
 const OTPScreen = ({ route }) => {
   const navigation = useNavigation();
+  const { navigateToAuth } = useAppContext();
   const [otp, setOtp] = useState(["", "", "", ""]);
   const [isLoading, setIsLoading] = useState(false);
   const [timer, setTimer] = useState(30);
@@ -77,8 +77,10 @@ const OTPScreen = ({ route }) => {
     // Simulate OTP verification
     setTimeout(() => {
       setIsLoading(false);
-      // For now, allow login button click without alert
-      navigation.navigate("Home"); // Navigate to home after successful OTP verification
+      // After successful OTP verification, update the app state to show main app
+      // and navigate to the main app with bottom tabs
+      navigateToAuth();
+      // The app context will ensure the user stays in the authenticated flow
     }, 1500);
   };
 

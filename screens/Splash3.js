@@ -5,6 +5,7 @@ import PrimaryButton from "../components/PrimaryButton";
 import SecondaryButton from "../components/SecondaryButton";
 import SplashStyles from "../components/styles/SplashStyles";
 import { COLORS } from "../constants/colors";
+import Splash3Image from "../assets/images/Splash-3.png";
 
 const Splash3 = () => {
   const { navigateToAuth } = useAppContext();
@@ -33,7 +34,7 @@ const Splash3 = () => {
       {/* Heritage Illustration using provided image */}
       <View style={SplashStyles.illustrationContainer}>
         <Image
-          source={require("../assets/images/Splash-3.png")}
+          source={Splash3Image}
           style={SplashStyles.illustration}
           contentFit="contain"
           cachePolicy="memory-disk"
