@@ -13,6 +13,7 @@ A modern, cross-platform travel companion application built with React Native an
 - Location services integration
 - Image handling capabilities
 - Push notification support
+- Native system UI integration for immersive travel experiences
 
 ## Technologies Used
 
@@ -26,6 +27,7 @@ A modern, cross-platform travel companion application built with React Native an
 - **Expo SecureStore**: Secure data storage
 - **Nativewind**: Tailwind CSS for React Native
 - **React Native Vector Icons**: Iconography
+- **Expo System UI**: Native system UI control for immersive experiences
 
 ## Prerequisites
 
@@ -120,6 +122,12 @@ This app has been optimized to reduce bundle size and improve download times:
 - Use Zustand for global state when justified
 - Avoid prop drilling by using context or Zustand stores
 - Keep component state local when it's not needed globally
+
+### System UI Management
+- Use the SystemUIManager component to control native system UI elements
+- Implement immersive experiences for travel maps and photo galleries
+- Maintain consistent background colors that match your app's theme
+- Use the useSystemUI hook for programmatic control when needed
 
 ### TypeScript Usage
 - Define proper types for props and interfaces

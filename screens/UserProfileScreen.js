@@ -1,6 +1,12 @@
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -14,10 +20,14 @@ const ProfileCard = ({ name, phone, location, onEditAvatar }) => {
     <View style={styles.profileCard}>
       <TouchableOpacity style={styles.avatarContainer} onPress={onEditAvatar}>
         <View style={styles.avatarPlaceholder}>
-          <Icon name="person" size={40} color={COLORS.textSecondary} />
+          <View>
+            <Icon name="person" size={40} color={COLORS.textSecondary} />
+          </View>
         </View>
         <View style={styles.editButton}>
-          <Icon name="pencil" size={14} color={COLORS.surface} />
+          <View>
+            <Icon name="pencil" size={14} color={COLORS.surface} />
+          </View>
         </View>
       </TouchableOpacity>
       <H1 style={styles.profileName}>{name}</H1>
@@ -32,14 +42,18 @@ const SettingsListItem = ({ icon, label, onPress }) => {
   return (
     <TouchableOpacity style={styles.settingsItem} onPress={onPress}>
       <View style={styles.iconContainer}>
-        <MaterialCommunityIcons
-          name={icon}
-          size={20}
-          color={COLORS.buttonGradientEnd}
-        />
+        <View>
+          <MaterialCommunityIcons
+            name={icon}
+            size={20}
+            color={COLORS.buttonGradientEnd}
+          />
+        </View>
       </View>
       <P style={styles.settingsLabel}>{label}</P>
-      <Icon name="chevron-forward" size={20} color={COLORS.textTertiary} />
+      <View>
+        <Icon name="chevron-forward" size={20} color={COLORS.textTertiary} />
+      </View>
     </TouchableOpacity>
   );
 };
@@ -48,12 +62,14 @@ const SettingsListItem = ({ icon, label, onPress }) => {
 const OutlineButton = ({ title, onPress, icon }) => {
   return (
     <TouchableOpacity style={styles.logoutButton} onPress={onPress}>
-      <Icon
-        name={icon}
-        size={16}
-        color={COLORS.buttonGradientEnd}
-        style={styles.logoutIcon}
-      />
+      <View>
+        <Icon
+          name={icon}
+          size={16}
+          color={COLORS.buttonGradientEnd}
+          style={styles.logoutIcon}
+        />
+      </View>
       <P style={styles.logoutText}>{title}</P>
     </TouchableOpacity>
   );
@@ -79,6 +95,9 @@ const UserProfileScreen = () => {
   const handleSettingsItemPress = (item) => {
     console.log(`${item} pressed`);
     // Navigate to specific setting screen based on item
+    if (item === "Edit Profile") {
+      navigation.navigate("EditProfile");
+    }
   };
 
   const handleLogout = () => {
@@ -92,10 +111,12 @@ const UserProfileScreen = () => {
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.header}>
           <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-            <Icon name="arrow-back" size={24} color={COLORS.primary} />
+            <View>
+              <Icon name="arrow-back" size={24} color={COLORS.primary} />
+            </View>
           </TouchableOpacity>
           <H1 style={styles.headerTitle}>My Profile</H1>
-          <View style={styles.placeholder} /> {/* To balance the header */}
+          <View style={styles.placeholder} />
         </View>
 
         <ScrollView
@@ -116,8 +137,8 @@ const UserProfileScreen = () => {
           <View style={styles.settingsCard}>
             <SettingsListItem
               icon="credit-card"
-              label="Payment Methods"
-              onPress={() => handleSettingsItemPress("Payment Methods")}
+              label="Edit Profile"
+              onPress={() => handleSettingsItemPress("Edit Profile")}
             />
             <View style={styles.divider} />
             <SettingsListItem

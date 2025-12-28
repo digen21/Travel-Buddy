@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import * as Font from "expo-font";
 import { COLORS } from "../constants/colors";
+import SystemUIManager from "./SystemUIManager";
 
 // Wrapper component that handles font loading and passes it to the child components
 const FontLoaderWrapper = ({ children }) => {
@@ -28,13 +29,21 @@ const FontLoaderWrapper = ({ children }) => {
 
   if (!fontsLoaded) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={COLORS.splashAccent} />
-      </View>
+      <>
+        <SystemUIManager backgroundColor={COLORS.splashBackground} />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={COLORS.splashAccent} />
+        </View>
+      </>
     );
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      <SystemUIManager backgroundColor={COLORS.background} />
+      {children}
+    </>
+  );
 };
 
 const styles = StyleSheet.create({

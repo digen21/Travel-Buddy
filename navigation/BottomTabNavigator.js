@@ -9,8 +9,8 @@ import {
   HomeScreen,
   MapScreen,
   MyTripsScreen,
-  UserProfileScreen,
   TravelByScreen,
+  UserProfileScreen,
 } from "../screens";
 
 // Import the bottom navigation component
