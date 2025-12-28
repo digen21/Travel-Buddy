@@ -2,6 +2,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Swiper from "../components/Swiper";
 import { useAppContext } from "../contexts/AppContext";
+import EditProfileScreen from "../screens/EditProfileScreen";
 import LoginScreen from "../screens/LoginScreen";
 import OTPScreen from "../screens/OTPScreen";
 import RegisterScreen from "../screens/RegisterScreen";
@@ -54,6 +55,7 @@ const StackNavigation = () => {
             }}
           >
             <Stack.Screen name="BottomTabs" component={BottomTabNavigator} />
+            <Stack.Screen name="EditProfile" component={EditProfileScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       );

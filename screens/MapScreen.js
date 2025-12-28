@@ -1,12 +1,16 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { COLORS } from '../constants/colors';
+import SystemUIManager from '../components/SystemUIManager';
 
 const MapScreen = () => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Map Screen</Text>
-    </View>
+    <>
+      <SystemUIManager backgroundColor={COLORS.background} />
+      <View style={styles.container}>
+        <Text style={styles.text}>Map Screen</Text>
+      </View>
+    </>
   );
 };
 

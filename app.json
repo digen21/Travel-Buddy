@@ -29,7 +29,10 @@
       "package": "com.dmx214.wanderly"
     },
     "owner": "dmx214",
-    "plugins": ["expo-secure-store"],
+    "plugins": [
+      "expo-secure-store",
+      "expo-system-ui"
+    ],
     "extra": {
       "eas": {
         "projectId": "01fc402b-7681-4abb-a049-6c4f6dc1bb1c"

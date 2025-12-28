@@ -1,4 +1,5 @@
 export { default as BlogsScreen } from "./BlogsScreen";
+export { default as EditProfileScreen } from "./EditProfileScreen";
 export { default as ExpenseOverviewScreen } from "./ExpenseOverviewScreen";
 export { default as ExploreScreen } from "./ExploreScreen";
 export { default as HomeScreen } from "./HomeScreen";
