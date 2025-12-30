@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -7,6 +8,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import AddContributorsBottomSheet from "../components/AddContributorsBottomSheet";
 import Background from "../components/Background";
 import SystemUIManager from "../components/SystemUIManager";
 import { Caption, H1, P } from "../components/Typography";
@@ -17,7 +19,7 @@ const ContributorsViewAllScreen = ({ route, navigation }) => {
   const routeContributors = route?.params?.contributors || [];
 
   // Sample data for fallback
-  const contributors =
+  const [contributors, setContributors] = useState(
     routeContributors.length > 0
       ? routeContributors
       : [
@@ -26,7 +28,12 @@ const ContributorsViewAllScreen = ({ route, navigation }) => {
           { id: 3, name: "Amit Patel", amount: 1000, status: "PENDING" },
           { id: 4, name: "Sneha Reddy", amount: 1000, status: "PAID" },
           { id: 5, name: "Vikram Singh", amount: 1000, status: "PENDING" },
-        ];
+        ]
+  );
+
+  // State for add contributors bottom sheet
+  const [isAddContributorsVisible, setIsAddContributorsVisible] =
+    useState(false);
 
   return (
     <SafeAreaView
@@ -49,7 +56,7 @@ const ContributorsViewAllScreen = ({ route, navigation }) => {
             <H1 style={styles.screenTitle}>Contributors</H1>
             <TouchableOpacity
               style={styles.addButton}
-              onPress={() => console.log("Add new contributor")}
+              onPress={() => setIsAddContributorsVisible(true)}
             >
               <Icon name="person-add" size={24} color={COLORS.primary} />
             </TouchableOpacity>
@@ -93,6 +100,29 @@ const ContributorsViewAllScreen = ({ route, navigation }) => {
             ))}
           </View>
         </ScrollView>
+
+        <AddContributorsBottomSheet
+          isVisible={isAddContributorsVisible}
+          onClose={() => setIsAddContributorsVisible(false)}
+          onConfirm={(newContribs) => {
+            // Add new contributors using array spread approach
+            const nextId =
+              contributors.length > 0
+                ? Math.max(...contributors.map((c) => c.id)) + 1
+                : 1;
+
+            const newContributorsWithIds = newContribs.map(
+              (contributor, index) => ({
+                id: nextId + index,
+                name: contributor.name.trim(),
+                amount: parseFloat(contributor.amount) || 0,
+                status: contributor.status,
+              })
+            );
+
+            setContributors([...contributors, ...newContributorsWithIds]);
+          }}
+        />
       </Background>
     </SafeAreaView>
   );

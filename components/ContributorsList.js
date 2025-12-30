@@ -97,6 +97,15 @@ const styles = StyleSheet.create({
   },
   contributorsList: {
     gap: 12,
+    backgroundColor: COLORS.surface,
+    borderRadius: 16,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 3,
   },
   contributorItem: {
     flexDirection: "row",

@@ -36,7 +36,7 @@ TOP BAR:
 - Title centered: "Trip Wallet"
   - Font: Playfair Display
   - Size: 24–26px
-  - Weight: 700
+  - Weight: 600
 
 WALLET BALANCE CARD (PRIMARY):
 - White card, rounded (16px), soft shadow

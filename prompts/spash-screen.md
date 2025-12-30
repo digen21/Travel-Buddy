@@ -9,7 +9,7 @@ TYPOGRAPHY:
 
 - App name:
   - Font: Playfair Display
-  - Weight: 700
+  - Weight: 600
   - Size: ~30px
   - Color: #1A1A1A
 - Optional tagline:

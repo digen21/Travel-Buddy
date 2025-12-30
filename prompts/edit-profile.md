@@ -30,7 +30,7 @@ TOP BAR:
 - Screen title centered: "Edit Profile"
   - Font: Playfair Display
   - Size: 24–26px
-  - Weight: 700
+  - Weight: 600
   - Color: #1A1A1A
 
 PROFILE PHOTO SECTION:
@@ -58,7 +58,7 @@ FORM CARD (PERSONAL INFO):
   - Text: "Personal Info"
   - Font: Playfair Display
   - Size: 18–20px
-  - Weight: 700
+  - Weight: 600
   - Color: #1A1A1A
 - Thin divider line below title:
   - Color: #EFE6D8

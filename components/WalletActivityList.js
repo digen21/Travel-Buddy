@@ -67,6 +67,15 @@ const styles = StyleSheet.create({
   },
   activityList: {
     gap: 12,
+    backgroundColor: COLORS.surface,
+    borderRadius: 16,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 3,
   },
   activityItem: {
     flexDirection: "row",

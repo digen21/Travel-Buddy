@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
   balanceAmount: {
     fontFamily: "PlayfairDisplay",
     fontSize: 28,
-    fontWeight: "700",
+    fontWeight: "600",
     color: COLORS.primary,
     marginBottom: 12,
   },
@@ -138,6 +138,7 @@ const styles = StyleSheet.create({
   },
   addFundsButton: {
     marginTop: 12,
+    borderRadius: 22,
   },
   modalOverlay: {
     flex: 1,

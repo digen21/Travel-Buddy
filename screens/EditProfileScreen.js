@@ -318,7 +318,7 @@ const styles = StyleSheet.create({
   },
   primaryButton: {
     height: 48,
-    borderRadius: 14,
+    borderRadius: 22,
     backgroundColor: "transparent",
     justifyContent: "center",
     alignItems: "center",
