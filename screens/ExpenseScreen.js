@@ -1,21 +1,15 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useState } from "react";
+import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import Background from "../components/Background";
-import SystemUIManager from "../components/SystemUIManager";
-import { H1, H2, H3, P, Caption } from "../components/Typography";
-import { COLORS } from "../constants/colors";
-import WalletBalance from "../components/WalletBalance";
 import ContributorsList from "../components/ContributorsList";
+import SystemUIManager from "../components/SystemUIManager";
+import { H1 } from "../components/Typography";
 import WalletActivityList from "../components/WalletActivityList";
-import { SafeAreaView } from "react-native-safe-area-context";
+import WalletBalance from "../components/WalletBalance";
+import { COLORS } from "../constants/colors";
 
 const ExpenseScreen = () => {
   // State for wallet balance
@@ -23,11 +17,41 @@ const ExpenseScreen = () => {
   const navigation = useNavigation();
 
   const contributors = [
-    { id: 1, name: "Rajesh Kumar", amount: 1000, status: "PAID" },
-    { id: 2, name: "Priya Sharma", amount: 1000, status: "PAID" },
-    { id: 3, name: "Amit Patel", amount: 1000, status: "PENDING" },
-    { id: 4, name: "Sneha Reddy", amount: 1000, status: "PAID" },
-    { id: 5, name: "Vikram Singh", amount: 1000, status: "PENDING" },
+    {
+      id: 1,
+      name: "Rajesh Kumar",
+      amount: 1000,
+      status: "PAID",
+      paymentMethod: "CASH",
+    },
+    {
+      id: 2,
+      name: "Priya Sharma",
+      amount: 1000,
+      status: "PAID",
+      paymentMethod: "ONLINE",
+    },
+    {
+      id: 3,
+      name: "Amit Patel",
+      amount: 1000,
+      status: "PENDING",
+      paymentMethod: "CASH",
+    },
+    {
+      id: 4,
+      name: "Sneha Reddy",
+      amount: 1000,
+      status: "PAID",
+      paymentMethod: "ONLINE",
+    },
+    {
+      id: 5,
+      name: "Vikram Singh",
+      amount: 1000,
+      status: "PENDING",
+      paymentMethod: "CASH",
+    },
   ];
 
   const walletActivity = [
@@ -107,7 +131,6 @@ const ExpenseScreen = () => {
           <ContributorsList
             contributors={contributors}
             onViewAll={handleViewAllContributors}
-            onAddContributor={handleAddContributor}
           />
 
           {/* Wallet Activity Section */}

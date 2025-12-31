@@ -1,4 +1,5 @@
 import {
+  FlatList,
   ScrollView,
   StyleSheet,
   Text,
@@ -66,27 +67,32 @@ const WalletActivityViewAllScreen = ({ route, navigation }) => {
 
           {/* Wallet Activity List */}
           <View style={styles.section}>
-            {walletActivity.map((activity) => (
-              <View key={activity.id} style={styles.activityItem}>
-                <View style={styles.activityInfo}>
-                  <P style={styles.activityName}>{activity.name}</P>
-                  <Caption style={styles.activityDetails}>
-                    {activity.date} • {activity.category}
-                  </Caption>
+            <FlatList
+              data={walletActivity}
+              renderItem={({ item }) => (
+                <View style={styles.activityItem}>
+                  <View style={styles.activityInfo}>
+                    <P style={styles.activityName}>{item.name}</P>
+                    <Caption style={styles.activityDetails}>
+                      {item.date} • {item.category}
+                    </Caption>
+                  </View>
+                  <Text
+                    style={[
+                      styles.activityAmount,
+                      item.type === "expense"
+                        ? styles.expenseAmount
+                        : styles.depositAmount,
+                    ]}
+                  >
+                    {item.type === "expense" ? "-" : "+"}₹
+                    {Math.abs(item.amount).toLocaleString("en-IN")}
+                  </Text>
                 </View>
-                <Text
-                  style={[
-                    styles.activityAmount,
-                    activity.type === "expense"
-                      ? styles.expenseAmount
-                      : styles.depositAmount,
-                  ]}
-                >
-                  {activity.type === "expense" ? "-" : "+"}₹
-                  {Math.abs(activity.amount).toLocaleString("en-IN")}
-                </Text>
-              </View>
-            ))}
+              )}
+              keyExtractor={(item) => item.id.toString()}
+              scrollEnabled={false}
+            />
           </View>
         </ScrollView>
       </SafeAreaView>

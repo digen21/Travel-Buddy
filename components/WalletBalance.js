@@ -1,33 +1,45 @@
 import { useState } from "react";
-import {
-  Modal,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { COLORS } from "../constants/colors";
 import PrimaryButton from "./PrimaryButton";
 import { Caption, H3, P } from "./Typography";
+import AddFundsBottomSheet from "./AddFundsBottomSheet";
 
 const WalletBalance = ({ balance, onAddFunds }) => {
-  const [isAddFundsModalVisible, setIsAddFundsModalVisible] = useState(false);
-  const [amountToAdd, setAmountToAdd] = useState("");
+  const [isAddFundsBottomSheetVisible, setIsAddFundsBottomSheetVisible] =
+    useState(false);
 
-  const handleAddFunds = () => {
-    if (amountToAdd && !isNaN(amountToAdd) && parseFloat(amountToAdd) > 0) {
-      onAddFunds(parseFloat(amountToAdd));
-      setAmountToAdd("");
-      setIsAddFundsModalVisible(false);
+  const handleConfirmFunds = (contributors, totalAmount) => {
+    // Calculate the total amount that was confirmed for payment
+    const confirmedAmount = contributors.reduce((sum, contrib) => {
+      if (contrib.status === "PAID") {
+        sum += contrib.amount;
+      }
+      return sum;
+    }, 0);
+
+    // Update the wallet balance with the confirmed amount
+    if (confirmedAmount > 0) {
+      onAddFunds(confirmedAmount);
     }
+    setIsAddFundsBottomSheetVisible(false);
+  };
+
+  const handleHistoryPress = () => {
+    // This would typically navigate to a history screen or open a history modal
+    console.log("History button pressed");
   };
 
   return (
     <View>
       {/* Wallet Balance Card */}
       <View style={styles.card}>
-        <H3 style={styles.cardTitle}>Total Wallet Balance</H3>
+        <View style={styles.cardHeader}>
+          <H3 style={styles.cardTitle}>Total Wallet Balance</H3>
+          <TouchableOpacity style={styles.historyButton} onPress={handleHistoryPress}>
+            <Text style={styles.historyButtonText}>History</Text>
+          </TouchableOpacity>
+        </View>
         <Text style={styles.balanceAmount}>
           ₹{balance.toLocaleString("en-IN")}
         </Text>
@@ -44,50 +56,16 @@ const WalletBalance = ({ balance, onAddFunds }) => {
         <PrimaryButton
           title="Add Funds"
           style={styles.addFundsButton}
-          onPress={() => setIsAddFundsModalVisible(true)}
+          onPress={() => setIsAddFundsBottomSheetVisible(true)}
         />
       </View>
 
-      {/* Add Funds Modal */}
-      <Modal
-        visible={isAddFundsModalVisible}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={() => setIsAddFundsModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <H3 style={styles.modalTitle}>Add Funds to Wallet</H3>
-
-            <TextInput
-              style={styles.input}
-              placeholder="Enter amount"
-              keyboardType="numeric"
-              value={amountToAdd}
-              onChangeText={setAmountToAdd}
-            />
-
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity
-                style={[styles.button, styles.cancelButton]}
-                onPress={() => {
-                  setIsAddFundsModalVisible(false);
-                  setAmountToAdd("");
-                }}
-              >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.button, styles.confirmButton]}
-                onPress={handleAddFunds}
-              >
-                <Text style={styles.confirmButtonText}>Add Funds</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+      {/* Add Funds Bottom Sheet */}
+      <AddFundsBottomSheet
+        isVisible={isAddFundsBottomSheetVisible}
+        onClose={() => setIsAddFundsBottomSheetVisible(false)}
+        onConfirm={handleConfirmFunds}
+      />
     </View>
   );
 };
@@ -136,61 +114,25 @@ const styles = StyleSheet.create({
   contributionText: {
     color: COLORS.textSecondary,
   },
+  cardHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  historyButton: {
+    padding: 6,
+    backgroundColor: COLORS.inputBackground,
+    borderRadius: 8,
+  },
+  historyButtonText: {
+    color: COLORS.accent,
+    fontSize: 12,
+    fontWeight: "500",
+  },
   addFundsButton: {
     marginTop: 12,
     borderRadius: 22,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  modalContent: {
-    backgroundColor: COLORS.surface,
-    borderRadius: 16,
-    padding: 20,
-    width: "100%",
-    maxWidth: 400,
-  },
-  modalTitle: {
-    marginBottom: 16,
-    textAlign: "center",
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 16,
-    fontSize: 16,
-    backgroundColor: COLORS.inputBackground,
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  button: {
-    flex: 1,
-    padding: 12,
-    borderRadius: 8,
-    alignItems: "center",
-    marginHorizontal: 5,
-  },
-  cancelButton: {
-    backgroundColor: COLORS.inputBackground,
-  },
-  confirmButton: {
-    backgroundColor: COLORS.buttonGradientStart,
-  },
-  cancelButtonText: {
-    color: COLORS.text,
-    fontWeight: "500",
-  },
-  confirmButtonText: {
-    color: COLORS.textInverse,
-    fontWeight: "500",
   },
 });
 

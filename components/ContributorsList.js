@@ -1,17 +1,81 @@
 import {
-  ScrollView,
+  FlatList,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import MaterialDesignIcons from "@react-native-vector-icons/material-design-icons";
 import { COLORS } from "../constants/colors";
 import { Caption, H2, P } from "./Typography";
 
-const ContributorsList = ({ contributors, onViewAll, onAddContributor }) => {
+const ContributorsList = ({ contributors, onViewAll }) => {
   // Limit to 3 contributors for initial display
   const displayedContributors = contributors.slice(0, 3);
+
+  const renderItem = ({ item, index }) => (
+    <View>
+      <View style={styles.contributorItem}>
+        <View style={styles.avatar}>
+          <Text style={styles.avatarText}>{item.name.charAt(0)}</Text>
+        </View>
+        <View style={styles.contributorInfo}>
+          <View style={styles.rowContainer}>
+            <P style={styles.contributorName}>{item.name}</P>
+            <Caption style={styles.contributorAmount}>₹{item.amount}</Caption>
+          </View>
+          <View style={styles.rowContainer}>
+            <Caption style={styles.contributorVia}>
+              Payment via
+              {item.paymentMethod
+                ? item.paymentMethod.toLowerCase()
+                : "cash"}{" "}
+              {
+                <MaterialDesignIcons
+                  name={
+                    item.paymentMethod === "CASH"
+                      ? "cash-multiple"
+                      : "credit-card-plus"
+                  }
+                  color={
+                    item.paymentMethod === "CASH"
+                      ? COLORS.success
+                      : COLORS.pending
+                  }
+                  size={20}
+                />
+              }
+            </Caption>
+
+            <View
+              style={[
+                styles.statusBadge,
+                item.status === "PAID"
+                  ? styles.paidStatus
+                  : styles.pendingStatus,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.statusText,
+                  item.status === "PAID"
+                    ? styles.paidStatusText
+                    : styles.pendingStatusText,
+                ]}
+              >
+                {item.status}
+              </Text>
+            </View>
+          </View>
+        </View>
+      </View>
+      {index < displayedContributors.length - 1 && (
+        <View style={styles.separator} />
+      )}
+    </View>
+  );
 
   return (
     <SafeAreaView style={styles.container} edges={["left", "right", "bottom"]}>
@@ -25,42 +89,14 @@ const ContributorsList = ({ contributors, onViewAll, onAddContributor }) => {
           </View>
         </View>
 
-        <ScrollView style={styles.contributorsList}>
-          {displayedContributors.map((contributor) => (
-            <View key={contributor.id} style={styles.contributorItem}>
-              <View style={styles.avatar}>
-                <Text style={styles.avatarText}>
-                  {contributor.name.charAt(0)}
-                </Text>
-              </View>
-              <View style={styles.contributorInfo}>
-                <P style={styles.contributorName}>{contributor.name}</P>
-                <Caption style={styles.contributorAmount}>
-                  ₹{contributor.amount}
-                </Caption>
-              </View>
-              <View
-                style={[
-                  styles.statusBadge,
-                  contributor.status === "PAID"
-                    ? styles.paidStatus
-                    : styles.pendingStatus,
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.statusText,
-                    contributor.status === "PAID"
-                      ? styles.paidStatusText
-                      : styles.pendingStatusText,
-                  ]}
-                >
-                  {contributor.status}
-                </Text>
-              </View>
-            </View>
-          ))}
-        </ScrollView>
+        <View style={styles.contributorsList}>
+          <FlatList
+            data={displayedContributors}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+            scrollEnabled={false}
+          />
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -111,7 +147,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: 12,
-    backgroundColor: COLORS.inputBackground,
     borderRadius: 12,
   },
   avatar: {
@@ -137,6 +172,16 @@ const styles = StyleSheet.create({
   contributorAmount: {
     color: COLORS.textSecondary,
   },
+  rowContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 4,
+  },
+  contributorVia: {
+    color: COLORS.textSecondary,
+    fontSize: 12,
+  },
   statusBadge: {
     paddingHorizontal: 10,
     paddingVertical: 4,
@@ -156,7 +201,12 @@ const styles = StyleSheet.create({
     color: COLORS.success,
   },
   pendingStatusText: {
-    color: "#FF9800",
+    color: COLORS.pending,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: COLORS.border,
+    marginVertical: 8,
   },
 });
 

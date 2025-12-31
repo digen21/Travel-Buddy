@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  FlatList,
   ScrollView,
   StyleSheet,
   Text,
@@ -8,10 +9,9 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import AddContributorsBottomSheet from "../components/AddContributorsBottomSheet";
 import Background from "../components/Background";
 import SystemUIManager from "../components/SystemUIManager";
-import { Caption, H1, P } from "../components/Typography";
+import { H1, P } from "../components/Typography";
 import { COLORS } from "../constants/colors";
 
 const ContributorsViewAllScreen = ({ route, navigation }) => {
@@ -23,17 +23,13 @@ const ContributorsViewAllScreen = ({ route, navigation }) => {
     routeContributors.length > 0
       ? routeContributors
       : [
-          { id: 1, name: "Rajesh Kumar", amount: 1000, status: "PAID" },
-          { id: 2, name: "Priya Sharma", amount: 1000, status: "PAID" },
-          { id: 3, name: "Amit Patel", amount: 1000, status: "PENDING" },
-          { id: 4, name: "Sneha Reddy", amount: 1000, status: "PAID" },
-          { id: 5, name: "Vikram Singh", amount: 1000, status: "PENDING" },
+          { id: 1, name: "Rajesh Kumar" },
+          { id: 2, name: "Priya Sharma" },
+          { id: 3, name: "Amit Patel" },
+          { id: 4, name: "Sneha Reddy" },
+          { id: 5, name: "Vikram Singh" },
         ]
   );
-
-  // State for add contributors bottom sheet
-  const [isAddContributorsVisible, setIsAddContributorsVisible] =
-    useState(false);
 
   return (
     <SafeAreaView
@@ -53,76 +49,65 @@ const ContributorsViewAllScreen = ({ route, navigation }) => {
             >
               <Icon name="arrow-back" size={24} color={COLORS.primary} />
             </TouchableOpacity>
-            <H1 style={styles.screenTitle}>Contributors</H1>
-            <TouchableOpacity
-              style={styles.addButton}
-              onPress={() => setIsAddContributorsVisible(true)}
-            >
-              <Icon name="person-add" size={24} color={COLORS.primary} />
-            </TouchableOpacity>
+            <H1 style={styles.screenTitle}>Trip Contributors: Taj Mahal</H1>
+            <View style={styles.placeholder} />
+          </View>
+
+          {/* Top Summary Card */}
+          <View style={styles.summaryCard}>
+            <View style={styles.summaryContainer}>
+              <View style={styles.summaryColumn}>
+                <P style={styles.summaryLabel}>Total Raised</P>
+                <P style={styles.summaryValue}>₹5,000</P>
+              </View>
+              <View style={styles.verticalSeparator} />
+              <View style={styles.summaryColumn}>
+                <P style={styles.summaryLabel}>Goal</P>
+                <P style={styles.summaryValue}>₹10,000</P>
+              </View>
+            </View>
           </View>
 
           {/* Contributors List */}
           <View style={styles.section}>
-            {contributors.map((contributor) => (
-              <View key={contributor.id} style={styles.contributorItem}>
-                <View style={styles.avatar}>
-                  <Text style={styles.avatarText}>
-                    {contributor.name.charAt(0)}
-                  </Text>
+            <FlatList
+              data={contributors}
+              renderItem={({ item, index }) => (
+                <View>
+                  <View style={styles.contributorItem}>
+                    <View style={styles.avatar}>
+                      <Text style={styles.avatarText}>
+                        {item.name.charAt(0)}
+                      </Text>
+                    </View>
+                    <View style={styles.contributorInfo}>
+                      <P style={styles.contributorName}>{item.name}</P>
+                      <View style={styles.statusContainer}>
+                        <View style={styles.joinedStatus}>
+                          <P style={styles.joinedStatusText}>Joined</P>
+                        </View>
+                      </View>
+                    </View>
+                  </View>
+                  {index < contributors.length - 1 && (
+                    <View style={styles.separator} />
+                  )}
                 </View>
-                <View style={styles.contributorInfo}>
-                  <P style={styles.contributorName}>{contributor.name}</P>
-                  <Caption style={styles.contributorAmount}>
-                    ₹{contributor.amount}
-                  </Caption>
-                </View>
-                <View
-                  style={[
-                    styles.statusBadge,
-                    contributor.status === "PAID"
-                      ? styles.paidStatus
-                      : styles.pendingStatus,
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.statusText,
-                      contributor.status === "PAID"
-                        ? styles.paidStatusText
-                        : styles.pendingStatusText,
-                    ]}
-                  >
-                    {contributor.status}
-                  </Text>
-                </View>
-              </View>
-            ))}
+              )}
+              keyExtractor={(item) => item.id.toString()}
+              scrollEnabled={false}
+            />
           </View>
         </ScrollView>
 
-        <AddContributorsBottomSheet
-          isVisible={isAddContributorsVisible}
-          onClose={() => setIsAddContributorsVisible(false)}
-          onConfirm={(newContribs) => {
-            // Add new contributors using array spread approach
-            const nextId =
-              contributors.length > 0
-                ? Math.max(...contributors.map((c) => c.id)) + 1
-                : 1;
-
-            const newContributorsWithIds = newContribs.map(
-              (contributor, index) => ({
-                id: nextId + index,
-                name: contributor.name.trim(),
-                amount: parseFloat(contributor.amount) || 0,
-                status: contributor.status,
-              })
-            );
-
-            setContributors([...contributors, ...newContributorsWithIds]);
-          }}
-        />
+        {/* Action Section with CTA Button */}
+        <View style={styles.actionSection}>
+          <TouchableOpacity style={styles.primaryButton}>
+            <Text style={styles.primaryButtonText}>
+              + Invite More Contributors
+            </Text>
+          </TouchableOpacity>
+        </View>
       </Background>
     </SafeAreaView>
   );
@@ -131,14 +116,11 @@ const ContributorsViewAllScreen = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.surface,
   },
   background: {
     flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  safeArea: {
-    flex: 1,
+    backgroundColor: COLORS.surface,
   },
   scrollContainer: {
     padding: 16,
@@ -153,20 +135,13 @@ const styles = StyleSheet.create({
   backButton: {
     padding: 8,
   },
-  backButtonText: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: COLORS.primary,
-  },
   screenTitle: {
+    fontFamily: "PlayfairDisplay",
     textAlign: "center",
     flex: 1,
   },
   placeholder: {
     width: 40, // To balance the back button space
-  },
-  addButton: {
-    padding: 8,
   },
   section: {
     marginBottom: 24,
@@ -175,9 +150,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: 12,
-    backgroundColor: COLORS.inputBackground,
     borderRadius: 12,
-    marginBottom: 12,
   },
   avatar: {
     width: 40,
@@ -193,35 +166,111 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 16,
   },
-  contributorInfo: {
-    flex: 1,
-  },
   contributorName: {
+    fontFamily: "PlayfairDisplay",
     fontWeight: "500",
   },
-  contributorAmount: {
+  separator: {
+    height: 1,
+    backgroundColor: COLORS.border,
+    marginVertical: 8,
+  },
+  summaryCard: {
+    backgroundColor: COLORS.surface,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 24,
+    shadowColor: COLORS.shadowColor,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  summaryRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
+  summaryLabel: {
+    fontFamily: "PlayfairDisplay",
+    fontSize: 14,
     color: COLORS.textSecondary,
   },
-  statusBadge: {
-    paddingHorizontal: 10,
+  summaryValue: {
+    fontFamily: "PlayfairDisplay",
+    fontSize: 24,
+    fontWeight: "600",
+    color: COLORS.primary,
+  },
+  summaryContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  summaryColumn: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  verticalSeparator: {
+    width: 1,
+    backgroundColor: COLORS.textSecondary,
+    marginHorizontal: 12,
+    alignSelf: "stretch",
+  },
+  contributorInfo: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  statusContainer: {
+    justifyContent: "center",
+  },
+  joinedStatus: {
+    backgroundColor: "#F5F5DC", // warm beige
+    borderColor: "#D4AF37", // gold tint
+    borderWidth: 1,
+    borderRadius: 20,
+    paddingHorizontal: 12,
     paddingVertical: 4,
-    borderRadius: 12,
   },
-  paidStatus: {
-    backgroundColor: "#E8F5E9",
-  },
-  pendingStatus: {
-    backgroundColor: "#FFF3E0",
-  },
-  statusText: {
+  joinedStatusText: {
+    fontFamily: "PlayfairDisplay",
     fontSize: 12,
     fontWeight: "500",
+    color: "#3E2723", // dark brown
   },
-  paidStatusText: {
-    color: COLORS.success,
+  actionSection: {
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 30,
   },
-  pendingStatusText: {
-    color: "#FF9800",
+  primaryButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    height: 48,
+    backgroundColor: COLORS.buttonGradientEnd,
+    borderRadius: 22,
+    shadowColor: COLORS.buttonGradientEnd,
+    shadowOffset: {
+      width: 0,
+      height: -4,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 6,
+  },
+  primaryButtonText: {
+    fontFamily: "PlayfairDisplay",
+    fontSize: 16,
+    fontWeight: "600",
+    color: COLORS.textInverse,
+    marginRight: 8,
   },
 });
 

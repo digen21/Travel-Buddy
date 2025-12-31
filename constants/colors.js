@@ -49,6 +49,7 @@ export const COLORS = {
 
   // Semantic Colors
   success: "#4CAF50",
+  pending: "#FF9800",
   warning: "#FFC107",
   error: "#F44336",
   info: "#2196F3",
