@@ -29,7 +29,6 @@ const EditProfileScreen = () => {
 
   const handleSaveChanges = () => {
     // Save the updated user profile information
-    console.log("Saving user profile:", userData);
     // Navigate back to profile screen or show success message
     navigation.goBack();
   };
@@ -318,7 +317,7 @@ const styles = StyleSheet.create({
   },
   primaryButton: {
     height: 48,
-    borderRadius: 14,
+    borderRadius: 22,
     backgroundColor: "transparent",
     justifyContent: "center",
     alignItems: "center",

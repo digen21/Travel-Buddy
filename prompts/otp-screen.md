@@ -28,7 +28,7 @@ HEADER TEXT:
 - Title: "Verification"
   - Font: Playfair Display
   - Size: 26–28px
-  - Weight: 700
+  - Weight: 600
   - Color: #1A1A1A
   - Center aligned
 

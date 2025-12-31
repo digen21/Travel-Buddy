@@ -2,10 +2,13 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Swiper from "../components/Swiper";
 import { useAppContext } from "../contexts/AppContext";
+import ContributorsViewAllScreen from "../screens/ContributorsViewAllScreen";
 import EditProfileScreen from "../screens/EditProfileScreen";
+import ExpenseScreen from "../screens/ExpenseScreen";
 import LoginScreen from "../screens/LoginScreen";
 import OTPScreen from "../screens/OTPScreen";
 import RegisterScreen from "../screens/RegisterScreen";
+import WalletActivityViewAllScreen from "../screens/WalletActivityViewAllScreen";
 import BottomTabNavigator from "./BottomTabNavigator";
 
 const Stack = createNativeStackNavigator();
@@ -56,6 +59,15 @@ const StackNavigation = () => {
           >
             <Stack.Screen name="BottomTabs" component={BottomTabNavigator} />
             <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+            <Stack.Screen name="Expense" component={ExpenseScreen} />
+            <Stack.Screen
+              name="ContributorsViewAll"
+              component={ContributorsViewAllScreen}
+            />
+            <Stack.Screen
+              name="WalletActivityViewAll"
+              component={WalletActivityViewAllScreen}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       );

@@ -2,7 +2,7 @@ import React from "react";
 import { Text, StyleSheet } from "react-native";
 import { COLORS } from "../constants/colors";
 
-// H1 (Screen Title) - Playfair Display, 26-28px, Weight: 700, Color: #1A1A1A
+// H1 (Screen Title) - Playfair Display, 26-28px, Weight: 600, Color: #1A1A1A
 export const H1 = ({ children, style, ...props }) => (
   <Text style={[styles.h1, style]} {...props}>
     {children}

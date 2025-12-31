@@ -30,7 +30,7 @@ TOP BAR:
 - Screen title centered: "My Profile"
   - Font: Playfair Display
   - Size: 24–26px
-  - Weight: 700
+  - Weight: 600
   - Color: #1A1A1A
 
 PROFILE CARD (PRIMARY CARD):
@@ -56,7 +56,7 @@ USER DETAILS:
 - User name (e.g., "Aarav Sharma"):
   - Font: Playfair Display
   - Size: 20–22px
-  - Weight: 700
+  - Weight: 600
   - Color: #1A1A1A
 - Phone number:
   - Font: Inter

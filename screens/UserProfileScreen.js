@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     height: 48,
-    borderRadius: 14,
+    borderRadius: 22,
     borderWidth: 1.5,
     borderColor: COLORS.buttonGradientEnd,
     marginBottom: 32, // Increased margin to ensure visibility above FAB

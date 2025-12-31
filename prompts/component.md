@@ -130,7 +130,7 @@ H1 (Screen Title):
 
 - Font: Playfair Display
 - Size: 26–28px
-- Weight: 700
+- Weight: 600
 - Color: #1A1A1A
 - Line height: 1.2
 

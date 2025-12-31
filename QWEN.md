@@ -43,7 +43,7 @@ Typography and Fonts:
 - Use consistent font families throughout the app (Playfair Display, Inter)
 - Define font weights, sizes, and styles in a centralized typography system
 - Maintain accessibility-compliant font sizes and contrast ratios
-- Use appropriate font weights for hierarchy (700 for headings, 400 for body text, etc.)
+- Use appropriate font weights for hierarchy (600 for headings, 400 for body text, etc.)
 - Avoid redundant font loading by using a wrapper component pattern (e.g., FontLoaderWrapper) that loads fonts once and passes them to child components
 
 Color Management:
@@ -53,6 +53,21 @@ Color Management:
 - Maintain consistent color usage across the app for visual harmony
 - Consider accessibility with sufficient contrast ratios between text and backgrounds
 - Separate color definitions from component implementation
+
+Component Addition - AddContributorsBottomSheet:
+
+- A reusable bottom sheet component for adding contributors to expenses
+- Implements the design specification from prompts/add-contributors.md
+- Features include:
+  - Form fields for contributor name and amount
+  - Status selector for Pending/Paid status
+  - Ability to add multiple contributors
+  - Display of added contributors with delete functionality
+  - Total calculation summary
+  - Gradient confirm button
+- Uses the same styling as other app components (colors, fonts, spacing)
+- Properly handles numeric input validation for amounts
+- Implements proper state management for multiple contributors
 
 Styling Approach:
 

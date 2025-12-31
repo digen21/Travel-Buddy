@@ -1,15 +1,15 @@
+import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import React from "react";
 import {
-  View,
-  TouchableOpacity,
-  Text,
-  StyleSheet,
   Animated,
   Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { COLORS } from "../constants/colors";
-import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { COLORS } from "../constants/colors";
 
 const BottomNavigation = ({ state, navigation }) => {
   // Extract the current active route name from the state
@@ -58,9 +58,8 @@ const BottomNavigation = ({ state, navigation }) => {
   };
 
   const handleFabPress = () => {
-    // Navigate to add trip or create new travel plan
-    // This can be customized based on your requirements
-    console.log("FAB pressed");
+    // Navigate to Expense screen when FAB is pressed
+    navigation.navigate("Expense");
   };
 
   // Function to render a navigation item
