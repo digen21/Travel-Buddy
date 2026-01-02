@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import { useState } from "react";
 import {
-  View,
-  TextInput,
   StyleSheet,
   Text,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { COLORS } from '../constants/colors';
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { COLORS } from "../constants/colors";
 
 const InputField = ({
   label,
@@ -14,20 +14,25 @@ const InputField = ({
   value,
   onChangeText,
   icon,
+  onIconPress,
   rightIcon,
   onRightIconPress,
   error,
   disabled = false,
   secureTextEntry = false,
-  keyboardType = 'default',
-  autoCapitalize = 'sentences',
+  keyboardType = "default",
+  autoCapitalize = "sentences",
   autoFocus = false,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
 
   const containerStyle = [
     styles.container,
-    { backgroundColor: disabled ? COLORS.inputDisabledBackground : COLORS.inputBackground },
+    {
+      backgroundColor: disabled
+        ? COLORS.inputDisabledBackground
+        : COLORS.inputBackground,
+    },
     error ? styles.errorContainer : null,
     isFocused && !error ? styles.focusedContainer : null,
     disabled ? styles.disabledContainer : null,
@@ -36,7 +41,7 @@ const InputField = ({
   const textStyle = [
     styles.inputText,
     { color: disabled ? COLORS.textDisabled : COLORS.inputText },
-    { fontFamily: 'Inter' },
+    { fontFamily: "Inter" },
   ];
 
   return (
@@ -44,12 +49,13 @@ const InputField = ({
       {label && <Text style={styles.label}>{label}</Text>}
       <View style={containerStyle}>
         {icon && (
-          <Ionicons 
-            name={icon} 
-            size={18} 
-            color={disabled ? COLORS.textDisabled : COLORS.inputIconColor} 
-            style={styles.icon} 
-          />
+          <TouchableOpacity
+            onPress={onRightIconPress}
+            activeOpacity={0.7} // Gives visual feedback
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} // Makes it easier to tap
+          >
+            {icon}
+          </TouchableOpacity>
         )}
         <TextInput
           style={textStyle}
@@ -65,13 +71,13 @@ const InputField = ({
           onBlur={() => setIsFocused(false)}
         />
         {rightIcon && (
-          <Ionicons
-            name={rightIcon}
-            size={18}
-            color={disabled ? COLORS.textDisabled : COLORS.inputIconColor}
-            style={styles.rightIcon}
+          <TouchableOpacity
             onPress={onRightIconPress}
-          />
+            activeOpacity={0.7} // Gives visual feedback
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} // Makes it easier to tap
+          >
+            {rightIcon}
+          </TouchableOpacity>
         )}
       </View>
       {error && <Text style={styles.errorText}>{error}</Text>}
@@ -81,17 +87,17 @@ const InputField = ({
 
 const styles = StyleSheet.create({
   wrapper: {
-    width: '100%',
+    width: "100%",
   },
   container: {
     height: 48,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: COLORS.inputBorder,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 12,
-    shadowColor: 'rgba(0,0,0,0.03)',
+    shadowColor: "rgba(0,0,0,0.03)",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 1,
     shadowRadius: 2,
@@ -116,20 +122,21 @@ const styles = StyleSheet.create({
   inputText: {
     flex: 1,
     fontSize: 14,
-    fontWeight: '400',
+    fontWeight: "400",
     color: COLORS.inputText,
   },
   label: {
-    marginBottom: 8,
+    marginTop: 10,
+    marginBottom: 2,
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
     color: COLORS.textPrimary,
   },
   errorText: {
     marginTop: 4,
     fontSize: 12,
     color: COLORS.textError,
-    fontFamily: 'Inter',
+    fontFamily: "Inter",
   },
 });
 

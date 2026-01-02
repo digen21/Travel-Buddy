@@ -1,3 +1,4 @@
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import {
@@ -9,6 +10,7 @@ import {
   StyleSheet,
   View,
 } from "react-native";
+import Icon from "react-native-vector-icons/MaterialIcons";
 import Background from "../components/Background";
 import ImageBackgroundWrapper from "../components/ImageBackgroundWrapper";
 import InputField from "../components/InputField";
@@ -74,7 +76,13 @@ const LoginScreen = () => {
                       placeholder="Enter your email"
                       value={email}
                       onChangeText={setEmail}
-                      icon="mail-outline"
+                      icon={
+                        <Icon
+                          name="mail-outline"
+                          size={18}
+                          color={COLORS.inputIconColor}
+                        />
+                      }
                       keyboardType="email-address"
                       autoCapitalize="none"
                     />
@@ -84,8 +92,20 @@ const LoginScreen = () => {
                       placeholder="Enter your password"
                       value={password}
                       onChangeText={setPassword}
-                      icon="lock-closed-outline"
-                      rightIcon={showPassword ? "eye-off" : "eye"}
+                      icon={
+                        <Icon
+                          name="lock-outline"
+                          size={18}
+                          color={COLORS.inputIconColor}
+                        />
+                      }
+                      rightIcon={
+                        <Ionicons
+                          name={showPassword ? "eye" : "eye-off"}
+                          size={18}
+                          color={COLORS.inputIconColor}
+                        />
+                      }
                       onRightIconPress={() => setShowPassword(!showPassword)}
                       secureTextEntry={!showPassword}
                       style={styles.inputMarginTop}
