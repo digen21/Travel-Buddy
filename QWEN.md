@@ -36,6 +36,10 @@ Coding Principles you must strictly follow:
 - Clearly explain pros and cons of the current approach
 - Never apply patch fixes — always identify and fix the root cause
 - If the requirement itself is flawed, call it out clearly and suggest a better approach
+- Keep components minimal and simple, easy to understand (not more than 100 lines excluding the `const styles = StyleSheet.create`)
+- Ensure lesser prop drilling (No Nested prop-drilling)
+- Make components not be more dependent on each other
+- Code should be more usable and simple, not complex
 
 Typography and Fonts:
 

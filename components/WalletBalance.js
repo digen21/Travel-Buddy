@@ -1,11 +1,13 @@
+import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { COLORS } from "../constants/colors";
+import AddFundsBottomSheet from "./AddFundsBottomSheet";
 import PrimaryButton from "./PrimaryButton";
 import { Caption, H3, P } from "./Typography";
-import AddFundsBottomSheet from "./AddFundsBottomSheet";
 
 const WalletBalance = ({ balance, onAddFunds }) => {
+  const navigation = useNavigation();
   const [isAddFundsBottomSheetVisible, setIsAddFundsBottomSheetVisible] =
     useState(false);
 
@@ -21,8 +23,20 @@ const WalletBalance = ({ balance, onAddFunds }) => {
     // Update the wallet balance with the confirmed amount
     if (confirmedAmount > 0) {
       onAddFunds(confirmedAmount);
+      // Navigate to success screen first
+      const newBalance = balance + confirmedAmount;
+      navigation.navigate("SuccessfulAddedFunds", {
+        amountAdded: confirmedAmount.toLocaleString("en-IN"),
+        newBalance: newBalance.toLocaleString("en-IN"),
+      });
+      // Close the bottom sheet after starting navigation
+      setTimeout(() => {
+        setIsAddFundsBottomSheetVisible(false);
+      }, 100); // Small delay to ensure navigation starts first
+    } else {
+      // If no confirmed amount, just close the bottom sheet
+      setIsAddFundsBottomSheetVisible(false);
     }
-    setIsAddFundsBottomSheetVisible(false);
   };
 
   const handleHistoryPress = () => {
@@ -36,7 +50,10 @@ const WalletBalance = ({ balance, onAddFunds }) => {
       <View style={styles.card}>
         <View style={styles.cardHeader}>
           <H3 style={styles.cardTitle}>Total Wallet Balance</H3>
-          <TouchableOpacity style={styles.historyButton} onPress={handleHistoryPress}>
+          <TouchableOpacity
+            style={styles.historyButton}
+            onPress={handleHistoryPress}
+          >
             <Text style={styles.historyButtonText}>History</Text>
           </TouchableOpacity>
         </View>

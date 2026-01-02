@@ -8,6 +8,7 @@ import ExpenseScreen from "../screens/ExpenseScreen";
 import LoginScreen from "../screens/LoginScreen";
 import OTPScreen from "../screens/OTPScreen";
 import RegisterScreen from "../screens/RegisterScreen";
+import SuccessfulAddedFundsScreen from "../screens/SuccessfulAddedFundsScreen";
 import WalletActivityViewAllScreen from "../screens/WalletActivityViewAllScreen";
 import BottomTabNavigator from "./BottomTabNavigator";
 
@@ -67,6 +68,11 @@ const StackNavigation = () => {
             <Stack.Screen
               name="WalletActivityViewAll"
               component={WalletActivityViewAllScreen}
+            />
+            <Stack.Screen
+              name="SuccessfulAddedFunds"
+              component={SuccessfulAddedFundsScreen}
+              options={{ headerShown: false }}
             />
           </Stack.Navigator>
         </NavigationContainer>

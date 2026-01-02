@@ -24,9 +24,9 @@ const ContributorsList = ({ contributors, onViewAll }) => {
         <View style={styles.contributorInfo}>
           <View style={styles.rowContainer}>
             <P style={styles.contributorName}>{item.name}</P>
-            <Caption style={styles.contributorAmount}>₹{item.amount}</Caption>
+            {/* <Caption style={styles.contributorAmount}>₹{item.amount}</Caption> */}
           </View>
-          <View style={styles.rowContainer}>
+          {/* <View style={styles.rowContainer}>
             <Caption style={styles.contributorVia}>
               Payment via
               {item.paymentMethod
@@ -68,7 +68,7 @@ const ContributorsList = ({ contributors, onViewAll }) => {
                 {item.status}
               </Text>
             </View>
-          </View>
+          </View> */}
         </View>
       </View>
       {index < displayedContributors.length - 1 && (
