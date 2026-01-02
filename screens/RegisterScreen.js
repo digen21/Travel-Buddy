@@ -8,6 +8,8 @@ import {
   StyleSheet,
   View,
 } from "react-native";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import Background from "../components/Background";
 import ImageBackgroundWrapper from "../components/ImageBackgroundWrapper";
 import InputField from "../components/InputField";
@@ -72,7 +74,13 @@ const RegisterScreen = () => {
                     placeholder="Enter your full name"
                     value={name}
                     onChangeText={setName}
-                    icon="person-outline"
+                    icon={
+                      <Icon
+                        name="person-outline"
+                        size={18}
+                        color={COLORS.inputIconColor}
+                      />
+                    }
                   />
 
                   <InputField
@@ -80,7 +88,13 @@ const RegisterScreen = () => {
                     placeholder="Enter your email"
                     value={email}
                     onChangeText={setEmail}
-                    icon="mail-outline"
+                    icon={
+                      <Icon
+                        name="mail-outline"
+                        size={18}
+                        color={COLORS.inputIconColor}
+                      />
+                    }
                     keyboardType="email-address"
                     autoCapitalize="none"
                     style={styles.inputMarginTop}
@@ -91,8 +105,20 @@ const RegisterScreen = () => {
                     placeholder="Enter your password"
                     value={password}
                     onChangeText={setPassword}
-                    icon="lock-closed-outline"
-                    rightIcon={showPassword ? "eye-off" : "eye"}
+                    icon={
+                      <Icon
+                        name="lock-outline"
+                        size={18}
+                        color={COLORS.inputIconColor}
+                      />
+                    }
+                    rightIcon={
+                      <Ionicons
+                        name={showPassword ? "eye" : "eye-off"}
+                        size={18}
+                        color={COLORS.inputIconColor}
+                      />
+                    }
                     onRightIconPress={() => setShowPassword(!showPassword)}
                     secureTextEntry={!showPassword}
                     style={styles.inputMarginTop}

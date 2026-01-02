@@ -9,6 +9,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import Background from "../components/Background";
+import PrimaryButton from "../components/PrimaryButton";
 import SystemUIManager from "../components/SystemUIManager";
 import { Caption, H1, P } from "../components/Typography";
 import { COLORS } from "../constants/colors";
@@ -94,6 +95,23 @@ const WalletActivityViewAllScreen = ({ route, navigation }) => {
               scrollEnabled={false}
             />
           </View>
+
+          {/* Log Expense Button */}
+          <View style={styles.logExpenseButtonContainer}>
+            <PrimaryButton
+              title="Log Expense"
+              onPress={() => {
+                // Navigate to Log Expense screen with current balance
+                const totalBalance = walletActivity.reduce((sum, activity) => {
+                  return sum + activity.amount;
+                }, 0);
+                // Navigate to Log Expense screen with current balance
+                navigation.navigate("LogExpense", {
+                  initialBalance: totalBalance,
+                });
+              }}
+            />
+          </View>
         </ScrollView>
       </SafeAreaView>
     </Background>
@@ -163,6 +181,9 @@ const styles = StyleSheet.create({
   },
   depositAmount: {
     color: COLORS.success,
+  },
+  logExpenseButtonContainer: {
+    marginTop: 24,
   },
 });
 

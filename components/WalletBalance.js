@@ -39,6 +39,18 @@ const WalletBalance = ({ balance, onAddFunds }) => {
     }
   };
 
+  const handleLogExpense = (expenseAmount) => {
+    // Deduct the expense amount from the wallet
+    onAddFunds(-Math.abs(expenseAmount)); // Using negative value to indicate deduction
+
+    // Navigate to success screen to show the deduction
+    const newBalance = balance - Math.abs(expenseAmount);
+    navigation.navigate("SuccessfulAddedFunds", {
+      amountAdded: Math.abs(expenseAmount).toLocaleString("en-IN"),
+      newBalance: newBalance.toLocaleString("en-IN"),
+    });
+  };
+
   const handleHistoryPress = () => {
     // This would typically navigate to a history screen or open a history modal
     console.log("History button pressed");
@@ -70,11 +82,24 @@ const WalletBalance = ({ balance, onAddFunds }) => {
           5 members × ₹1,000 contribution
         </Caption>
 
-        <PrimaryButton
-          title="Add Funds"
-          style={styles.addFundsButton}
-          onPress={() => setIsAddFundsBottomSheetVisible(true)}
-        />
+        <View style={styles.buttonContainer}>
+          <PrimaryButton
+            title="Log Expense"
+            style={styles.logExpenseButton}
+            onPress={() => {
+              // Navigate to Log Expense screen with current balance and onAddFunds function
+              navigation.navigate("LogExpense", {
+                initialBalance: balance,
+                onAddFunds: onAddFunds
+              });
+            }}
+          />
+          <PrimaryButton
+            title="Add Funds"
+            style={styles.addFundsButton}
+            onPress={() => setIsAddFundsBottomSheetVisible(true)}
+          />
+        </View>
       </View>
 
       {/* Add Funds Bottom Sheet */}
@@ -147,8 +172,18 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "500",
   },
-  addFundsButton: {
+  buttonContainer: {
+    flexDirection: "row",
     marginTop: 12,
+  },
+  logExpenseButton: {
+    flex: 1,
+    marginRight: 6,
+    borderRadius: 22,
+  },
+  addFundsButton: {
+    flex: 1,
+    marginLeft: 6,
     borderRadius: 22,
   },
 });
