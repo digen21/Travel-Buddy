@@ -2,6 +2,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { COLORS } from "../constants/colors";
+import LogExpenseBottomSheet from "../screens/LogExpenseScreen"; // Note: file still called LogExpenseScreen but exports LogExpenseBottomSheet
 import AddFundsBottomSheet from "./AddFundsBottomSheet";
 import PrimaryButton from "./PrimaryButton";
 import { Caption, H3, P } from "./Typography";
@@ -9,6 +10,8 @@ import { Caption, H3, P } from "./Typography";
 const WalletBalance = ({ balance, onAddFunds }) => {
   const navigation = useNavigation();
   const [isAddFundsBottomSheetVisible, setIsAddFundsBottomSheetVisible] =
+    useState(false);
+  const [isLogExpenseBottomSheetVisible, setIsLogExpenseBottomSheetVisible] =
     useState(false);
 
   const handleConfirmFunds = (contributors, totalAmount) => {
@@ -39,12 +42,11 @@ const WalletBalance = ({ balance, onAddFunds }) => {
     }
   };
 
-  const handleLogExpense = (expenseAmount) => {
+  const handleLogExpense = (expenseAmount, newBalance) => {
     // Deduct the expense amount from the wallet
-    onAddFunds(-Math.abs(expenseAmount)); // Using negative value to indicate deduction
+    onAddFunds(expenseAmount); // expenseAmount is already negative for deductions
 
     // Navigate to success screen to show the deduction
-    const newBalance = balance - Math.abs(expenseAmount);
     navigation.navigate("SuccessfulAddedFunds", {
       amountAdded: Math.abs(expenseAmount).toLocaleString("en-IN"),
       newBalance: newBalance.toLocaleString("en-IN"),
@@ -86,13 +88,7 @@ const WalletBalance = ({ balance, onAddFunds }) => {
           <PrimaryButton
             title="Log Expense"
             style={styles.logExpenseButton}
-            onPress={() => {
-              // Navigate to Log Expense screen with current balance and onAddFunds function
-              navigation.navigate("LogExpense", {
-                initialBalance: balance,
-                onAddFunds: onAddFunds
-              });
-            }}
+            onPress={() => setIsLogExpenseBottomSheetVisible(true)}
           />
           <PrimaryButton
             title="Add Funds"
@@ -107,6 +103,14 @@ const WalletBalance = ({ balance, onAddFunds }) => {
         isVisible={isAddFundsBottomSheetVisible}
         onClose={() => setIsAddFundsBottomSheetVisible(false)}
         onConfirm={handleConfirmFunds}
+      />
+
+      {/* Log Expense Bottom Sheet */}
+      <LogExpenseBottomSheet
+        isVisible={isLogExpenseBottomSheetVisible}
+        onClose={() => setIsLogExpenseBottomSheetVisible(false)}
+        initialBalance={balance}
+        onLogExpense={handleLogExpense}
       />
     </View>
   );

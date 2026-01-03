@@ -31,7 +31,8 @@
     "owner": "dmx214",
     "plugins": [
       "expo-secure-store",
-      "expo-system-ui"
+      "expo-system-ui",
+      "@react-native-community/datetimepicker"
     ],
     "extra": {
       "eas": {

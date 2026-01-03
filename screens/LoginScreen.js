@@ -1,6 +1,5 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
 import {
   Alert,
   Image,
@@ -10,6 +9,7 @@ import {
   StyleSheet,
   View,
 } from "react-native";
+import { Formik } from "formik";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import Background from "../components/Background";
 import ImageBackgroundWrapper from "../components/ImageBackgroundWrapper";
@@ -19,20 +19,18 @@ import SecondaryButton from "../components/SecondaryButton";
 import { H1, LinkText, P } from "../components/Typography";
 import { COLORS } from "../constants/colors";
 import { useAppContext } from "../contexts/AppContext";
+import { loginValidationSchema } from "../validation/loginValidation";
 
 const LoginScreen = () => {
   const navigation = useNavigation();
   const { navigateToAuth } = useAppContext();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = () => {
-    setIsLoading(true);
+  const handleLogin = async (values, { setSubmitting }) => {
+    // values contains email and password
+    setSubmitting(true);
     // Simulate login process
     setTimeout(() => {
-      setIsLoading(false);
+      setSubmitting(false);
       // After successful login, update the app state to show main app
       // and navigate to the main app with bottom tabs
       navigateToAuth();
@@ -69,73 +67,96 @@ const LoginScreen = () => {
                   Sign in to continue your journey through{"\n"}history
                 </P>
 
-                <View style={styles.form}>
-                  <View style={styles.inputContainer}>
-                    <InputField
-                      label="Email"
-                      placeholder="Enter your email"
-                      value={email}
-                      onChangeText={setEmail}
-                      icon={
-                        <Icon
-                          name="mail-outline"
-                          size={18}
-                          color={COLORS.inputIconColor}
+                <Formik
+                  initialValues={{ email: "", password: "", showPassword: false }}
+                  validationSchema={loginValidationSchema}
+                  onSubmit={handleLogin}
+                >
+                  {({
+                    handleChange,
+                    handleBlur,
+                    handleSubmit,
+                    values,
+                    errors,
+                    touched,
+                    setFieldValue,
+                    isSubmitting,
+                  }) => (
+                    <View style={styles.form}>
+                      <View style={styles.inputContainer}>
+                        <InputField
+                          label="Email"
+                          placeholder="Enter your email"
+                          value={values.email}
+                          onChangeText={handleChange("email")}
+                          onBlur={handleBlur("email")}
+                          error={touched.email && errors.email}
+                          icon={
+                            <Icon
+                              name="mail-outline"
+                              size={18}
+                              color={COLORS.inputIconColor}
+                            />
+                          }
+                          keyboardType="email-address"
+                          autoCapitalize="none"
                         />
-                      }
-                      keyboardType="email-address"
-                      autoCapitalize="none"
-                    />
 
-                    <InputField
-                      label="Password"
-                      placeholder="Enter your password"
-                      value={password}
-                      onChangeText={setPassword}
-                      icon={
-                        <Icon
-                          name="lock-outline"
-                          size={18}
-                          color={COLORS.inputIconColor}
+                        <InputField
+                          label="Password"
+                          placeholder="Enter your password"
+                          value={values.password}
+                          onChangeText={handleChange("password")}
+                          onBlur={handleBlur("password")}
+                          error={touched.password && errors.password}
+                          icon={
+                            <Icon
+                              name="lock-outline"
+                              size={18}
+                              color={COLORS.inputIconColor}
+                            />
+                          }
+                          rightIcon={
+                            <Ionicons
+                              name={values.showPassword ? "eye" : "eye-off"}
+                              size={18}
+                              color={COLORS.inputIconColor}
+                            />
+                          }
+                          onRightIconPress={() =>
+                            setFieldValue("showPassword", !values.showPassword)
+                          }
+                          secureTextEntry={!values.showPassword}
+                          style={styles.inputMarginTop}
                         />
-                      }
-                      rightIcon={
-                        <Ionicons
-                          name={showPassword ? "eye" : "eye-off"}
-                          size={18}
-                          color={COLORS.inputIconColor}
-                        />
-                      }
-                      onRightIconPress={() => setShowPassword(!showPassword)}
-                      secureTextEntry={!showPassword}
-                      style={styles.inputMarginTop}
-                    />
-                  </View>
+                      </View>
 
-                  <LinkText style={styles.forgotPassword}>
-                    Forgot Password?
-                  </LinkText>
+                      <LinkText style={styles.forgotPassword}>
+                        Forgot Password?
+                      </LinkText>
 
-                  <PrimaryButton
-                    title="Sign In"
-                    onPress={handleLogin}
-                    loading={isLoading}
-                    style={styles.signInButton}
-                  />
+                      <PrimaryButton
+                        title="Sign In"
+                        onPress={handleSubmit}
+                        loading={isSubmitting}
+                        style={styles.signInButton}
+                      />
 
-                  <View style={styles.dividerContainer}>
-                    <View style={styles.dividerLine} />
-                    <P style={styles.dividerText}>Or Continue With</P>
-                    <View style={styles.dividerLine} />
-                  </View>
+                      <View style={styles.dividerContainer}>
+                        <View style={styles.dividerLine} />
+                        <P style={styles.dividerText}>Or Continue With</P>
+                        <View style={styles.dividerLine} />
+                      </View>
 
-                  <SecondaryButton
-                    title="Google"
-                    onPress={() => Alert.alert("Google login selected")}
-                    style={styles.socialButton}
-                    imgIcon={require("../assets/images/google-icon-logo-svgrepo-com.svg")}
-                  />
-                </View>
+                      <SecondaryButton
+                        title="Google"
+                        onPress={() => Alert.alert("Google login selected")}
+                        style={styles.socialButton}
+                        imgIcon={require("../assets/images/google-icon-logo-svgrepo-com.svg")}
+                      />
+                    </View>
+                  )}
+                </Formik>
                 <View>
                   <P style={styles.signUpText}>
                     Don't Have an account?{" "}

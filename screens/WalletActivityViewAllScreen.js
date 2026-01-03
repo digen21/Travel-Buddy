@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   FlatList,
   ScrollView,
@@ -13,10 +14,19 @@ import PrimaryButton from "../components/PrimaryButton";
 import SystemUIManager from "../components/SystemUIManager";
 import { Caption, H1, P } from "../components/Typography";
 import { COLORS } from "../constants/colors";
+import LogExpenseBottomSheet from "./LogExpenseScreen";
 
 const WalletActivityViewAllScreen = ({ route, navigation }) => {
+  const [isLogExpenseBottomSheetVisible, setIsLogExpenseBottomSheetVisible] =
+    useState(false);
+
   // Get activities data from route params or use default data
   const routeActivities = route?.params?.activities || [];
+
+  // Calculate total balance
+  const totalBalance = routeActivities.reduce((sum, activity) => {
+    return sum + activity.amount;
+  }, 0);
 
   // Sample data for fallback
   const walletActivity =
@@ -48,6 +58,14 @@ const WalletActivityViewAllScreen = ({ route, navigation }) => {
             type: "deposit",
           },
         ];
+
+  const handleLogExpense = (expenseAmount, newBalance) => {
+    // After logging expense, navigate to success screen
+    navigation.navigate("SuccessfulAddedFunds", {
+      amountAdded: Math.abs(expenseAmount).toLocaleString("en-IN"),
+      newBalance: newBalance.toLocaleString("en-IN"),
+    });
+  };
 
   return (
     <Background style={styles.container}>
@@ -100,19 +118,18 @@ const WalletActivityViewAllScreen = ({ route, navigation }) => {
           <View style={styles.logExpenseButtonContainer}>
             <PrimaryButton
               title="Log Expense"
-              onPress={() => {
-                // Navigate to Log Expense screen with current balance
-                const totalBalance = walletActivity.reduce((sum, activity) => {
-                  return sum + activity.amount;
-                }, 0);
-                // Navigate to Log Expense screen with current balance
-                navigation.navigate("LogExpense", {
-                  initialBalance: totalBalance,
-                });
-              }}
+              onPress={() => setIsLogExpenseBottomSheetVisible(true)}
             />
           </View>
         </ScrollView>
+
+        {/* Log Expense Bottom Sheet */}
+        <LogExpenseBottomSheet
+          isVisible={isLogExpenseBottomSheetVisible}
+          onClose={() => setIsLogExpenseBottomSheetVisible(false)}
+          initialBalance={totalBalance}
+          onLogExpense={handleLogExpense}
+        />
       </SafeAreaView>
     </Background>
   );

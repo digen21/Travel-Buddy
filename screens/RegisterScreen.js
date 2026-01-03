@@ -1,13 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
-import {
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  View,
-} from "react-native";
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from "react-native";
+import { Formik } from 'formik';
 import Icon from "react-native-vector-icons/MaterialIcons";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Background from "../components/Background";
@@ -18,27 +11,17 @@ import SecondaryButton from "../components/SecondaryButton";
 import { H1, LinkText, P } from "../components/Typography";
 import { COLORS } from "../constants/colors";
 import { useAppContext } from "../contexts/AppContext";
+import { registerValidationSchema } from '../validation/registerValidation';
 
 const RegisterScreen = () => {
   const navigation = useNavigation();
   const { navigateToAuth } = useAppContext();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
 
-  const handleRegister = () => {
-    if (password !== confirmPassword) {
-      Alert.alert("Error", "Passwords do not match");
-      return;
-    }
-
-    setIsLoading(true);
+  const handleRegister = async (values, { setSubmitting }) => {
+    setSubmitting(true);
     // Simulate registration process
     setTimeout(() => {
-      setIsLoading(false);
+      setSubmitting(false);
       // After successful registration, update the app state to show main app
       // and navigate to the main app with bottom tabs
       navigateToAuth();
@@ -67,104 +50,130 @@ const RegisterScreen = () => {
                 Join us to discover the roots of ancient India
               </P>
 
-              <View style={styles.form}>
-                <View style={styles.inputContainer}>
-                  <InputField
-                    label="Full Name"
-                    placeholder="Enter your full name"
-                    value={name}
-                    onChangeText={setName}
-                    icon={
-                      <Icon
-                        name="person-outline"
-                        size={18}
-                        color={COLORS.inputIconColor}
+              <Formik
+                initialValues={{
+                  name: "",
+                  email: "",
+                  password: "",
+                  confirmPassword: "",
+                  showPassword: false
+                }}
+                validationSchema={registerValidationSchema}
+                onSubmit={handleRegister}
+              >
+                {({ handleChange, handleBlur, handleSubmit, values, errors, touched, setFieldValue, isSubmitting }) => (
+                  <View style={styles.form}>
+                    <View style={styles.inputContainer}>
+                      <InputField
+                        label="Full Name"
+                        placeholder="Enter your full name"
+                        value={values.name}
+                        onChangeText={handleChange('name')}
+                        onBlur={handleBlur('name')}
+                        error={touched.name && errors.name}
+                        icon={
+                          <Icon
+                            name="person-outline"
+                            size={18}
+                            color={COLORS.inputIconColor}
+                          />
+                        }
                       />
-                    }
-                  />
 
-                  <InputField
-                    label="Email"
-                    placeholder="Enter your email"
-                    value={email}
-                    onChangeText={setEmail}
-                    icon={
-                      <Icon
-                        name="mail-outline"
-                        size={18}
-                        color={COLORS.inputIconColor}
+                      <InputField
+                        label="Email"
+                        placeholder="Enter your email"
+                        value={values.email}
+                        onChangeText={handleChange('email')}
+                        onBlur={handleBlur('email')}
+                        error={touched.email && errors.email}
+                        icon={
+                          <Icon
+                            name="mail-outline"
+                            size={18}
+                            color={COLORS.inputIconColor}
+                          />
+                        }
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                        style={styles.inputMarginTop}
                       />
-                    }
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    style={styles.inputMarginTop}
-                  />
 
-                  <InputField
-                    label="Password"
-                    placeholder="Enter your password"
-                    value={password}
-                    onChangeText={setPassword}
-                    icon={
-                      <Icon
-                        name="lock-outline"
-                        size={18}
-                        color={COLORS.inputIconColor}
+                      <InputField
+                        label="Password"
+                        placeholder="Enter your password"
+                        value={values.password}
+                        onChangeText={handleChange('password')}
+                        onBlur={handleBlur('password')}
+                        error={touched.password && errors.password}
+                        icon={
+                          <Icon
+                            name="lock-outline"
+                            size={18}
+                            color={COLORS.inputIconColor}
+                          />
+                        }
+                        rightIcon={
+                          <Ionicons
+                            name={values.showPassword ? "eye" : "eye-off"}
+                            size={18}
+                            color={COLORS.inputIconColor}
+                          />
+                        }
+                        onRightIconPress={() => setFieldValue('showPassword', !values.showPassword)}
+                        secureTextEntry={!values.showPassword}
+                        style={styles.inputMarginTop}
                       />
-                    }
-                    rightIcon={
-                      <Ionicons
-                        name={showPassword ? "eye" : "eye-off"}
-                        size={18}
-                        color={COLORS.inputIconColor}
+
+                      <InputField
+                        label="Confirm Password"
+                        placeholder="Confirm your password"
+                        value={values.confirmPassword}
+                        onChangeText={handleChange('confirmPassword')}
+                        onBlur={handleBlur('confirmPassword')}
+                        error={touched.confirmPassword && errors.confirmPassword}
+                        icon={
+                          <Icon
+                            name="lock-outline"
+                            size={18}
+                            color={COLORS.inputIconColor}
+                          />
+                        }
+                        rightIcon={
+                          <Ionicons
+                            name={values.showPassword ? "eye" : "eye-off"}
+                            size={18}
+                            color={COLORS.inputIconColor}
+                          />
+                        }
+                        onRightIconPress={() => setFieldValue('showPassword', !values.showPassword)}
+                        secureTextEntry={!values.showPassword}
+                        style={styles.inputMarginTop}
                       />
-                    }
-                    onRightIconPress={() => setShowPassword(!showPassword)}
-                    secureTextEntry={!showPassword}
-                    style={styles.inputMarginTop}
-                  />
-                  {/* 
-                  <InputField
-                    label="Confirm Password"
-                    placeholder="Confirm your password"
-                    value={confirmPassword}
-                    onChangeText={setConfirmPassword}
-                    icon="lock-closed-outline"
-                    rightIcon={showConfirmPassword ? "eye-off" : "eye"}
-                    onRightIconPress={() =>
-                      setShowConfirmPassword(!showConfirmPassword)
-                    }
-                    secureTextEntry={!showConfirmPassword}
-                    style={styles.inputMarginTop}
-                  /> */}
-                </View>
+                    </View>
 
-                <PrimaryButton
-                  title="Sign Up"
-                  onPress={handleRegister}
-                  loading={isLoading}
-                  style={styles.signUpButton}
-                />
+                    <PrimaryButton
+                      title="Sign Up"
+                      onPress={handleSubmit}
+                      loading={isSubmitting}
+                      style={styles.signUpButton}
+                    />
 
-                {/* <SecondaryButton
-                  title="Back to Login"
-                  onPress={handleBackToLogin}
-                  style={styles.backButton}
-                /> */}
+                    <View style={styles.dividerContainer}>
+                      <View style={styles.dividerLine} />
+                      <P style={styles.dividerText}>Or Continue With</P>
+                      <View style={styles.dividerLine} />
+                    </View>
 
-                <View style={styles.dividerContainer}>
-                  <View style={styles.dividerLine} />
-                  <P style={styles.dividerText}>Or Continue With</P>
-                  <View style={styles.dividerLine} />
-                </View>
-
-                <SecondaryButton
-                  title="Google"
-                  onPress={() => Alert.alert("Google login selected")}
-                  style={styles.socialButton}
-                  imgIcon={require("../assets/images/google-icon-logo-svgrepo-com.svg")}
-                />
-              </View>
+                    <SecondaryButton
+                      title="Google"
+                      onPress={() => Alert.alert("Google login selected")}
+                      style={styles.socialButton}
+                      imgIcon={require("../assets/images/google-icon-logo-svgrepo-com.svg")}
+                    />
+                  </View>
+                )}
+              </Formik>
               <View>
                 <P style={styles.signInText}>
                   Already have an account?{" "}

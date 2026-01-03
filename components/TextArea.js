@@ -20,11 +20,15 @@ const TextArea = ({
 }) => {
   return (
     <View style={[styles.container, containerStyle]}>
-      {label ? (
-        <Text style={styles.label}>{label}</Text>
-      ) : null}
-      
-      <View style={[styles.inputContainer, inputContainerStyle, error && styles.errorBorder]}>
+      {label ? <Text style={styles.label}>{label}</Text> : null}
+
+      <View
+        style={[
+          styles.inputContainer,
+          inputContainerStyle,
+          error && styles.errorBorder,
+        ]}
+      >
         {icon ? (
           <Icon
             name={icon}
@@ -33,12 +37,16 @@ const TextArea = ({
             style={styles.icon}
           />
         ) : null}
-        
+
         <TextInput
-          style={[styles.input, inputStyle, { 
-            height: numberOfLines * 20 + 16, 
-            paddingTop: textAlignVertical === 'top' ? 8 : undefined
-          }]}
+          style={[
+            styles.input,
+            inputStyle,
+            {
+              height: numberOfLines * 20 + 16,
+              paddingTop: textAlignVertical === "top" ? 8 : undefined,
+            },
+          ]}
           placeholder={placeholder}
           value={value}
           onChangeText={onChangeText}
@@ -49,10 +57,8 @@ const TextArea = ({
           placeholderTextColor={COLORS.textPlaceholder}
         />
       </View>
-      
-      {error ? (
-        <Text style={styles.errorText}>{error}</Text>
-      ) : null}
+
+      {error ? <Text style={styles.errorText}>{error}</Text> : null}
     </View>
   );
 };
@@ -62,11 +68,11 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   label: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: COLORS.textSecondary,
-    marginBottom: 8,
-    textTransform: "uppercase",
+    marginTop: 10,
+    marginBottom: 2,
+    fontSize: 14,
+    fontWeight: "500",
+    color: COLORS.textPrimary,
   },
   inputContainer: {
     flexDirection: "row",
