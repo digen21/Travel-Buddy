@@ -1,36 +1,31 @@
 import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Formik } from "formik";
+import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Background from "../components/Background";
+import InputField from "../components/InputField";
 import { H1, P } from "../components/Typography"; // Your common components
 import { COLORS } from "../constants/colors";
+import { editProfileValidationSchema } from "../validation/editProfileValidation";
 
 const EditProfileScreen = () => {
   const navigation = useNavigation();
-  const [userData, setUserData] = useState({
-    name: "Aarav Sharma",
-    email: "aarav.sharma@example.com",
-    phone: "+91 98765 43210",
-    bio: "Travel enthusiast exploring India's heritage",
-  });
 
   const handleBack = () => {
     navigation.goBack();
   };
 
-  const handleSaveChanges = () => {
+  const handleSaveChanges = async (values, { setSubmitting }) => {
+    setSubmitting(true);
     // Save the updated user profile information
     // Navigate back to profile screen or show success message
-    navigation.goBack();
+    // In a real app, you would update the user data with an API call here
+    setTimeout(() => {
+      setSubmitting(false);
+      navigation.goBack();
+    }, 1000);
   };
 
   const handleEditAvatar = () => {
@@ -59,128 +54,145 @@ const EditProfileScreen = () => {
           <View style={styles.placeholder} />
         </View>
 
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
+        <Formik
+          initialValues={{
+            name: "Aarav Sharma",
+            email: "aarav.sharma@example.com",
+            phone: "+91 98765 43210",
+            bio: "Travel enthusiast exploring India's heritage",
+          }}
+          validationSchema={editProfileValidationSchema}
+          onSubmit={handleSaveChanges}
         >
-          {/* Profile Photo Section */}
-          <View style={styles.avatarSection}>
-            <TouchableOpacity
-              style={styles.avatarContainer}
-              onPress={handleEditAvatar}
+          {({
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            setFieldValue,
+            values,
+            errors,
+            touched,
+            isValid,
+            isSubmitting,
+          }) => (
+            <ScrollView
+              contentContainerStyle={styles.scrollContent}
+              showsVerticalScrollIndicator={false}
             >
-              <View style={styles.avatarPlaceholder}>
-                <Icon name="person" size={40} color={COLORS.textSecondary} />
+              {/* Profile Photo Section */}
+              <View style={styles.avatarSection}>
+                <TouchableOpacity
+                  style={styles.avatarContainer}
+                  onPress={handleEditAvatar}
+                >
+                  <View style={styles.avatarPlaceholder}>
+                    <Icon
+                      name="person"
+                      size={40}
+                      color={COLORS.textSecondary}
+                    />
+                  </View>
+                  <View style={styles.editButton}>
+                    <Icon name="pencil" size={14} color={COLORS.surface} />
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={handleEditAvatar}>
+                  <P style={styles.changePhotoText}>Change Photo</P>
+                </TouchableOpacity>
               </View>
-              <View style={styles.editButton}>
-                <Icon name="pencil" size={14} color={COLORS.surface} />
+
+              {/* Personal Info Card */}
+              <View style={styles.card}>
+                <H1 style={styles.cardTitle}>Personal Info</H1>
+                <View style={styles.divider} />
+
+                {/* Name */}
+                <InputField
+                  label="Full Name"
+                  value={values.name}
+                  onChangeText={handleChange("name")}
+                  onBlur={handleBlur("name")}
+                  error={touched.name && errors.name}
+                  icon={<Icon name="person" size={18} color={COLORS.accent} />}
+                  containerStyle={styles.inputContainer}
+                  inputContainerStyle={styles.inputFieldContainer}
+                  inputStyle={styles.inputField}
+                />
+
+                {/* Email Input */}
+                <InputField
+                  label="Email Address"
+                  value={values.email}
+                  onChangeText={handleChange("email")}
+                  onBlur={handleBlur("email")}
+                  error={touched.email && errors.email}
+                  icon={<Icon name="mail" size={18} color={COLORS.accent} />}
+                  keyboardType="email-address"
+                  containerStyle={styles.inputContainer}
+                  inputContainerStyle={styles.inputFieldContainer}
+                  inputStyle={styles.inputField}
+                />
+
+                {/* Phone Input */}
+                <InputField
+                  label="Phone Number"
+                  value={values.phone}
+                  onChangeText={handleChange("phone")}
+                  onBlur={handleBlur("phone")}
+                  error={touched.phone && errors.phone}
+                  icon={<Icon name="call" size={18} color={COLORS.accent} />}
+                  keyboardType="phone-pad"
+                  containerStyle={styles.inputContainer}
+                  inputContainerStyle={styles.inputFieldContainer}
+                  inputStyle={styles.inputField}
+                />
+
+                {/* Bio Input */}
+                <InputField
+                  label="Bio"
+                  value={values.bio}
+                  onChangeText={handleChange("bio")}
+                  onBlur={handleBlur("bio")}
+                  error={touched.bio && errors.bio}
+                  icon={
+                    <Icon
+                      name="document-text"
+                      size={18}
+                      color={COLORS.accent}
+                    />
+                  }
+                  multiline
+                  containerStyle={[styles.inputContainer, styles.bioContainer]}
+                  inputContainerStyle={styles.inputFieldContainer}
+                  inputStyle={[styles.inputField, styles.bioInputField]}
+                />
               </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleEditAvatar}>
-              <P style={styles.changePhotoText}>Change Photo</P>
-            </TouchableOpacity>
-          </View>
 
-          {/* Personal Info Card */}
-          <View style={styles.card}>
-            <H1 style={styles.cardTitle}>Personal Info</H1>
-            <View style={styles.divider} />
+              {/* Save Changes Button */}
+              <TouchableOpacity
+                style={styles.primaryButton}
+                onPress={handleSubmit}
+                disabled={!isValid}
+              >
+                <P style={styles.primaryButtonText}>Save Changes</P>
+              </TouchableOpacity>
 
-            {/* Name */}
-            <View style={styles.inputContainer}>
-              <Icon name="person" size={18} color={COLORS.accent} />
-              <TextInput
-                style={styles.input}
-                value={userData.name}
-                onChangeText={(text) =>
-                  setUserData({ ...userData, name: text })
-                }
-                placeholder="Full Name"
-                placeholderTextColor={COLORS.textPlaceholder}
-              />
-            </View>
-
-            {/* Email Input */}
-            <View style={styles.inputContainer}>
-              <Icon
-                name="mail"
-                size={18}
-                color={COLORS.accent}
-                style={styles.inputIcon}
-              />
-              <TextInput
-                style={styles.input}
-                value={userData.email}
-                onChangeText={(text) =>
-                  setUserData({ ...userData, email: text })
-                }
-                placeholder="Email Address"
-                placeholderTextColor={COLORS.textPlaceholder}
-                keyboardType="email-address"
-              />
-            </View>
-
-            {/* Phone Input */}
-            <View style={styles.inputContainer}>
-              <Icon
-                name="call"
-                size={18}
-                color={COLORS.accent}
-                style={styles.inputIcon}
-              />
-              <TextInput
-                style={styles.input}
-                value={userData.phone}
-                onChangeText={(text) =>
-                  setUserData({ ...userData, phone: text })
-                }
-                placeholder="Phone Number"
-                placeholderTextColor={COLORS.textPlaceholder}
-                keyboardType="phone-pad"
-              />
-            </View>
-
-            {/* Bio Input */}
-            <View style={[styles.inputContainer, styles.bioContainer]}>
-              <Icon
-                name="document-text"
-                size={18}
-                color={COLORS.accent}
-                style={styles.inputIcon}
-              />
-              <TextInput
-                style={[styles.input, styles.bioInput]}
-                value={userData.bio}
-                onChangeText={(text) => setUserData({ ...userData, bio: text })}
-                placeholder="Bio"
-                placeholderTextColor={COLORS.textPlaceholder}
-                multiline
-              />
-            </View>
-          </View>
-
-          {/* Save Changes Button */}
-          <TouchableOpacity
-            style={styles.primaryButton}
-            onPress={handleSaveChanges}
-          >
-            <P style={styles.primaryButtonText}>Save Changes</P>
-          </TouchableOpacity>
-
-          {/* Change Password Link */}
-          <TouchableOpacity
-            style={styles.changePasswordContainer}
-            onPress={handleChangePassword}
-          >
-            <MaterialCommunityIcons
-              name="lock-reset"
-              size={22}
-              color={COLORS.accent}
-              style={styles.changePasswordIcon}
-            />
-            <P style={styles.changePasswordText}>Change Password</P>
-          </TouchableOpacity>
-        </ScrollView>
+              {/* Change Password Link */}
+              <TouchableOpacity
+                style={styles.changePasswordContainer}
+                onPress={handleChangePassword}
+              >
+                <MaterialCommunityIcons
+                  name="lock-reset"
+                  size={22}
+                  color={COLORS.accent}
+                  style={styles.changePasswordIcon}
+                />
+                <P style={styles.changePasswordText}>Change Password</P>
+              </TouchableOpacity>
+            </ScrollView>
+          )}
+        </Formik>
       </SafeAreaView>
     </Background>
   );
@@ -294,6 +306,23 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     paddingHorizontal: 12,
   },
+  inputFieldContainer: {
+    height: "auto",
+    alignItems: "center",
+    paddingHorizontal: 0,
+  },
+  inputField: {
+    fontSize: 16,
+    fontWeight: "400",
+    color: COLORS.inputText,
+    fontFamily: "Inter",
+    paddingHorizontal: 0,
+    paddingVertical: 12,
+  },
+  bioInputField: {
+    minHeight: 80,
+    textAlignVertical: "top",
+  },
   inputIconContainer: {
     marginRight: 12,
     width: 18,
@@ -345,6 +374,13 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: COLORS.accent,
     fontFamily: "Inter",
+  },
+  errorText: {
+    color: COLORS.error,
+    fontSize: 12,
+    marginLeft: 20,
+    marginTop: 4,
+    marginBottom: 4,
   },
 });
 

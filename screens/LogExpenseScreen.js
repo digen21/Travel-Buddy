@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { Formik } from "formik";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import InputField from "../components/InputField";
 import PrimaryButton from "../components/PrimaryButton";
@@ -16,6 +17,7 @@ import TextArea from "../components/TextArea";
 import TimePicker from "../components/TimePicker";
 import { Caption, H2 } from "../components/Typography";
 import { COLORS } from "../constants/colors";
+import { logExpenseValidationSchema } from "../validation/logExpenseValidation";
 
 const LogExpenseBottomSheet = ({
   isVisible,
@@ -23,13 +25,6 @@ const LogExpenseBottomSheet = ({
   initialBalance = 0,
   onLogExpense,
 }) => {
-  const [expenseAmount, setExpenseAmount] = useState("");
-  const [place, setPlace] = useState("");
-  const [time, setTime] = useState(new Date());
-  const [category, setCategory] = useState("");
-  const [description, setDescription] = useState("");
-  const [errors, setErrors] = useState({});
-
   // Predefined categories
   const predefinedCategories = [
     {
@@ -88,34 +83,12 @@ const LogExpenseBottomSheet = ({
     },
   ];
 
-  // Calculate balance after deduction
-  const numericExpenseAmount = parseFloat(expenseAmount) || 0;
-  const balanceAfterDeduction = initialBalance - numericExpenseAmount;
+  const handleLogExpense = async (values, { setSubmitting }) => {
+    setSubmitting(true);
 
-  // Validation
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!expenseAmount) {
-      newErrors.expenseAmount = "Amount is required";
-    } else if (numericExpenseAmount <= 0) {
-      newErrors.expenseAmount = "Amount must be greater than 0";
-    } else if (numericExpenseAmount > initialBalance) {
-      newErrors.expenseAmount = "Expense exceeds wallet balance";
-    }
-
-    if (!category) {
-      newErrors.category = "Category is required";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleLogExpense = () => {
-    if (!validateForm()) {
-      return; // Stop if validation fails
-    }
+    // Calculate balance after deduction
+    const numericExpenseAmount = parseFloat(values.expenseAmount) || 0;
+    const balanceAfterDeduction = initialBalance - numericExpenseAmount;
 
     // Check if expense exceeds wallet balance
     if (balanceAfterDeduction < 0) {
@@ -128,23 +101,22 @@ const LogExpenseBottomSheet = ({
             text: "Proceed",
             onPress: () => {
               // Process the expense even if it results in negative balance
-              processExpense();
+              processExpense(values.expenseAmount, balanceAfterDeduction);
+              setSubmitting(false);
             },
           },
         ]
       );
     } else {
       // Amount is within balance, process normally
-      processExpense();
+      processExpense(values.expenseAmount, balanceAfterDeduction);
+      setSubmitting(false);
     }
   };
 
-  const processExpense = () => {
+  const processExpense = (expenseAmount, newBalance) => {
     // Get the expense amount as a negative number (for deduction)
     const expenseAmountValue = -Math.abs(parseFloat(expenseAmount));
-
-    // Calculate the new balance after deduction
-    const newBalance = balanceAfterDeduction;
 
     // Call the onLogExpense callback to update the parent's state and navigate to success screen
     if (onLogExpense) {
@@ -176,145 +148,203 @@ const LogExpenseBottomSheet = ({
             </TouchableOpacity>
           </View>
 
-          <ScrollView contentContainerStyle={styles.content}>
-            {/* Balance Preview Section */}
-            <View style={styles.balancePreviewContainer}>
-              <View style={styles.balanceCard}>
-                <View style={styles.balanceRow}>
-                  <Icon
-                    name="account-balance-wallet"
-                    size={20}
-                    color={COLORS.inputIconColor}
-                  />
-                  <Text style={styles.balanceAmount}>
-                    ₹{initialBalance.toLocaleString("en-IN")}
-                  </Text>
-                </View>
-                <Caption style={styles.balanceLabel}>CURRENT BALANCE</Caption>
-              </View>
+          <Formik
+            initialValues={{
+              expenseAmount: "",
+              place: "",
+              time: new Date(),
+              category: "",
+              description: "",
+            }}
+            validationSchema={logExpenseValidationSchema}
+            onSubmit={handleLogExpense}
+          >
+            {({
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              setFieldValue,
+              values,
+              errors,
+              touched,
+              isValid,
+              isSubmitting,
+            }) => {
+              // Calculate balance after deduction
+              const numericExpenseAmount =
+                parseFloat(values.expenseAmount) || 0;
+              const balanceAfterDeduction =
+                initialBalance - numericExpenseAmount;
 
-              <View style={styles.balanceCardAfter}>
-                <View style={styles.balanceRow}>
-                  <Icon
-                    name="calculate"
-                    size={20}
-                    color={COLORS.inputIconColor}
-                  />
-                  <Text
-                    style={[
-                      styles.balanceAmount,
-                      balanceAfterDeduction < 0 ? styles.negativeBalance : {},
-                    ]}
-                  >
-                    ₹{Math.abs(balanceAfterDeduction).toLocaleString("en-IN")}
-                    {balanceAfterDeduction < 0 ? " (-)" : ""}
-                  </Text>
-                </View>
-                <Caption style={styles.balanceLabel}>AFTER DEDUCTION</Caption>
-              </View>
-            </View>
+              return (
+                <ScrollView contentContainerStyle={styles.content}>
+                  {/* Balance Preview Section */}
+                  <View style={styles.balancePreviewContainer}>
+                    <View style={styles.balanceCard}>
+                      <View style={styles.balanceRow}>
+                        <Icon
+                          name="account-balance-wallet"
+                          size={20}
+                          color={COLORS.inputIconColor}
+                        />
+                        <Text style={styles.balanceAmount}>
+                          ₹{initialBalance.toLocaleString("en-IN")}
+                        </Text>
+                      </View>
+                      <Caption style={styles.balanceLabel}>
+                        CURRENT BALANCE
+                      </Caption>
+                    </View>
 
-            {/* Expense Form Card */}
-            <View style={styles.expenseFormCard}>
-              {/* Amount Used Field */}
-              <InputField
-                label="AMOUNT USED"
-                placeholder="0.00"
-                value={expenseAmount}
-                onChangeText={(text) => {
-                  // Only allow numeric input
-                  const numericValue = text.replace(/[^0-9.]/g, "");
-                  setExpenseAmount(numericValue);
-                }}
-                icon={
-                  <Icon
-                    name="currency-rupee"
-                    size={20}
-                    color={COLORS.inputIconColor}
-                  />
-                }
-                keyboardType="numeric"
-                inputContainerStyle={styles.inputContainer}
-                inputStyle={styles.inputText}
-                error={errors.expenseAmount}
-              />
-              <Caption style={styles.amountHelperText}>
-                *This amount will be deducted from the shared wallet.
-              </Caption>
+                    <View style={styles.balanceCardAfter}>
+                      <View style={styles.balanceRow}>
+                        <Icon
+                          name="calculate"
+                          size={20}
+                          color={COLORS.inputIconColor}
+                        />
+                        <Text
+                          style={[
+                            styles.balanceAmount,
+                            balanceAfterDeduction < 0
+                              ? styles.negativeBalance
+                              : {},
+                          ]}
+                        >
+                          ₹
+                          {Math.abs(balanceAfterDeduction).toLocaleString(
+                            "en-IN"
+                          )}
+                          {balanceAfterDeduction < 0 ? " (-)" : ""}
+                        </Text>
+                      </View>
+                      <Caption style={styles.balanceLabel}>
+                        AFTER DEDUCTION
+                      </Caption>
+                    </View>
+                  </View>
 
-              {/* Place Field */}
-              <InputField
-                label="PLACE"
-                placeholder="Where?"
-                value={place}
-                onChangeText={setPlace}
-                icon={
-                  <Icon name="place" size={20} color={COLORS.inputIconColor} />
-                }
-                iconSize={20}
-                inputContainerStyle={styles.inputContainer}
-                inputStyle={styles.inputText}
-                containerStyle={styles.inputSpacing}
-              />
+                  {/* Expense Form Card */}
+                  <View style={styles.expenseFormCard}>
+                    {/* Amount Used Field */}
+                    <InputField
+                      label="AMOUNT USED"
+                      placeholder="0.00"
+                      value={values.expenseAmount}
+                      onChangeText={(text) => {
+                        // Only allow numeric input
+                        const numericValue = text.replace(/[^0-9.]/g, "");
+                        setFieldValue("expenseAmount", numericValue);
+                      }}
+                      icon={
+                        <Icon
+                          name="currency-rupee"
+                          size={20}
+                          color={COLORS.inputIconColor}
+                        />
+                      }
+                      keyboardType="numeric"
+                      inputContainerStyle={styles.inputContainer}
+                      inputStyle={styles.inputText}
+                      error={touched.expenseAmount && errors.expenseAmount}
+                    />
+                    <Caption style={styles.amountHelperText}>
+                      *This amount will be deducted from the shared wallet.
+                    </Caption>
 
-              {/* Time and Category - In a row with spacing between them */}
-              <TimePicker
-                label="TIME"
-                selectedTime={time}
-                onTimeChange={setTime}
-                inputContainerStyle={styles.inputContainer}
-                inputStyle={styles.inputText}
-                containerStyle={{ marginBottom: 0 }} // Remove default bottom margin
-              />
+                    {/* Place Field */}
+                    <InputField
+                      label="PLACE"
+                      placeholder="Where?"
+                      value={values.place}
+                      onChangeText={handleChange("place")}
+                      onBlur={handleBlur("place")}
+                      icon={
+                        <Icon
+                          name="place"
+                          size={20}
+                          color={COLORS.inputIconColor}
+                        />
+                      }
+                      iconSize={20}
+                      inputContainerStyle={styles.inputContainer}
+                      inputStyle={styles.inputText}
+                      containerStyle={styles.inputSpacing}
+                      error={touched.place && errors.place}
+                    />
 
-              {/* Expense Type Field with Dropdown - No space from Time */}
-              <View>
-                <SelectDropdown
-                  label="EXPENSE TYPE"
-                  data={predefinedCategories}
-                  onSelect={(value) => setCategory(value)}
-                  defaultText="Select or enter custom category"
-                  icon="category"
-                  containerStyle={{ marginTop: 0, marginBottom: 12 }}
-                  inputContainerStyle={styles.inputContainer}
-                  inputStyle={styles.inputText}
-                />
-              </View>
+                    {/* Time and Category - In a row with spacing between them */}
 
-              <View style={styles.errorAndHelperContainer}>
-                {errors.category && (
-                  <Caption style={styles.errorText}>{errors.category}</Caption>
-                )}
-                <Caption style={[styles.categoryHelperText, { marginTop: 4 }]}>
-                  *Category selection required
-                </Caption>
-              </View>
+                    <TimePicker
+                      label="TIME"
+                      selectedTime={values.time}
+                      onTimeChange={(time) => setFieldValue("time", time)}
+                      inputContainerStyle={styles.inputContainer}
+                      inputStyle={styles.inputText}
+                      containerStyle={{ marginBottom: 0 }} // Remove default bottom margin
+                    />
 
-              {/* Description Field */}
-              <TextArea
-                label="DESCRIPTION (OPTIONAL)"
-                placeholder="Add details like 'Lunch at Fort Kochi'..."
-                value={description}
-                onChangeText={setDescription}
-                icon="description"
-                numberOfLines={3}
-                textAlignVertical="top"
-                containerStyle={styles.inputSpacing}
-                inputContainerStyle={styles.inputContainer}
-                inputStyle={styles.inputText}
-              />
-            </View>
-          </ScrollView>
+                    {/* Expense Type Field with Dropdown */}
+                    <View style={styles.categoryDropdownContainer}>
+                      <SelectDropdown
+                        label="EXPENSE TYPE"
+                        data={predefinedCategories}
+                        onSelect={(value) => setFieldValue("category", value)}
+                        defaultText="Select or enter custom category"
+                        icon="category"
+                        containerStyle={{ marginTop: 0, marginBottom: 12 }}
+                        inputContainerStyle={styles.inputContainer}
+                        inputStyle={styles.inputText}
+                      />
+                    </View>
 
-          {/* Primary Action Button */}
-          <View style={styles.actionSection}>
-            <PrimaryButton
-              title="+ Add to Wallet Ledger"
-              onPress={handleLogExpense}
-              disabled={Object.keys(errors).length > 0}
-              style={styles.confirmButton}
-            />
-          </View>
+                    <View style={styles.errorAndHelperContainer}>
+                      {touched.category && errors.category && (
+                        <Caption style={styles.errorText}>
+                          {errors.category}
+                        </Caption>
+                      )}
+                      <Caption
+                        style={[styles.categoryHelperText, { marginTop: 4 }]}
+                      >
+                        *Category selection required
+                      </Caption>
+                    </View>
+
+                    {/* Description Field */}
+                    <TextArea
+                      label="DESCRIPTION (OPTIONAL)"
+                      placeholder="Add details like 'Lunch at Fort Kochi'..."
+                      value={values.description}
+                      onChangeText={handleChange("description")}
+                      onBlur={handleBlur("description")}
+                      icon="description"
+                      numberOfLines={3}
+                      textAlignVertical="top"
+                      containerStyle={styles.inputSpacing}
+                      inputContainerStyle={styles.inputContainer}
+                      inputStyle={styles.inputText}
+                      error={touched.description && errors.description}
+                    />
+                  </View>
+
+                  {/* Bottom Action Section */}
+                  <View style={styles.actionSection}>
+                    <PrimaryButton
+                      title="+ Add to Wallet Ledger"
+                      onPress={handleSubmit}
+                      loading={isSubmitting}
+                      disabled={
+                        !isValid ||
+                        parseFloat(values.expenseAmount) > initialBalance
+                      }
+                      style={styles.confirmButton}
+                    />
+                  </View>
+                </ScrollView>
+              );
+            }}
+          </Formik>
         </View>
       </View>
     </Modal>
@@ -512,6 +542,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   actionSection: {
+    marginTop: 30,
     padding: 20,
     paddingTop: 0,
   },
