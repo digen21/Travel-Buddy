@@ -5,7 +5,6 @@ import { useAppContext } from "../contexts/AppContext";
 import ContributorsViewAllScreen from "../screens/ContributorsViewAllScreen";
 import EditProfileScreen from "../screens/EditProfileScreen";
 import ExpenseScreen from "../screens/ExpenseScreen";
-import LogExpenseScreen from "../screens/LogExpenseScreen";
 import LoginScreen from "../screens/LoginScreen";
 import OTPScreen from "../screens/OTPScreen";
 import RegisterScreen from "../screens/RegisterScreen";
@@ -73,11 +72,6 @@ const StackNavigation = () => {
             <Stack.Screen
               name="SuccessfulAddedFunds"
               component={SuccessfulAddedFundsScreen}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="LogExpense"
-              component={LogExpenseScreen}
               options={{ headerShown: false }}
             />
           </Stack.Navigator>

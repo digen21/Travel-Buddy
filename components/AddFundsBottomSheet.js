@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { COLORS } from "../constants/colors";
+import formatAmount from "../utils/formatAmount";
 import { Caption, H2, P } from "./Typography";
 
 const AddFundsBottomSheet = ({ isVisible, onClose, onConfirm }) => {
@@ -111,12 +112,6 @@ const AddFundsBottomSheet = ({ isVisible, onClose, onConfirm }) => {
     onClose();
     // Reset form
     setTotalAmount("");
-  };
-
-  const formatAmount = (amount) => {
-    const num = parseFloat(amount);
-    if (isNaN(num)) return "0";
-    return num.toLocaleString("en-IN");
   };
 
   const quickAmounts = [100, 500, 1000];
