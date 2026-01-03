@@ -1,4 +1,5 @@
 import MaterialDesignIcons from "@react-native-vector-icons/material-design-icons";
+import { Formik } from "formik";
 import { useState } from "react";
 import {
   FlatList,
@@ -6,17 +7,17 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import InputField from "./InputField";
 import { COLORS } from "../constants/colors";
 import formatAmount from "../utils/formatAmount";
+import { addFundsValidationSchema } from "../validation/addFundsValidation";
 import { Caption, H2, P } from "./Typography";
 
 const AddFundsBottomSheet = ({ isVisible, onClose, onConfirm }) => {
-  const [totalAmount, setTotalAmount] = useState("");
   const [contributors, setContributors] = useState([
     {
       id: 1,
@@ -56,12 +57,6 @@ const AddFundsBottomSheet = ({ isVisible, onClose, onConfirm }) => {
   ]);
   const [selectedContributors, setSelectedContributors] = useState(new Set());
 
-  // Calculate amount per person when total amount changes
-  const amountPerPerson =
-    totalAmount && contributors.length > 0
-      ? (parseFloat(totalAmount) / contributors.length).toFixed(2)
-      : 0;
-
   const toggleContributorSelection = (id) => {
     const newSelected = new Set(selectedContributors);
     if (newSelected.has(id)) {
@@ -93,7 +88,13 @@ const AddFundsBottomSheet = ({ isVisible, onClose, onConfirm }) => {
     }
   };
 
-  const handleAddFunds = () => {
+  const handleAddFunds = (values) => {
+    // Calculate amount per person when total amount changes
+    const amountPerPerson =
+      values.totalAmount && contributors.length > 0
+        ? (parseFloat(values.totalAmount) / contributors.length).toFixed(2)
+        : 0;
+
     // Prepare data for confirmed contributors
     const confirmedContributors = contributors.map((contrib) => {
       const isSelected = selectedContributors.has(contrib.id);
@@ -108,10 +109,8 @@ const AddFundsBottomSheet = ({ isVisible, onClose, onConfirm }) => {
       };
     });
 
-    onConfirm(confirmedContributors, parseFloat(totalAmount));
+    onConfirm(confirmedContributors, parseFloat(values.totalAmount));
     onClose();
-    // Reset form
-    setTotalAmount("");
   };
 
   const quickAmounts = [100, 500, 1000];
@@ -141,249 +140,309 @@ const AddFundsBottomSheet = ({ isVisible, onClose, onConfirm }) => {
             </TouchableOpacity>
           </View>
 
-          <ScrollView contentContainerStyle={styles.content}>
-            {/* Additional Amount Needed Card */}
-            <View style={styles.inputSection}>
-              <Caption style={styles.statusLabel}>
-                ADDITIONAL AMOUNT NEEDED
-              </Caption>
+          <Formik
+            initialValues={{ totalAmount: "" }}
+            validationSchema={addFundsValidationSchema}
+            onSubmit={handleAddFunds}
+          >
+            {({
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              setFieldValue,
+              values,
+              errors,
+              touched,
+              isValid,
+              isSubmitting,
+            }) => {
+              // Calculate amount per person when total amount changes
+              const amountPerPerson =
+                values.totalAmount && contributors.length > 0
+                  ? (
+                      parseFloat(values.totalAmount) / contributors.length
+                    ).toFixed(2)
+                  : 0;
 
-              <View style={styles.amountInputContainer}>
-                <Text style={styles.currencySymbol}>₹</Text>
-                <TextInput
-                  style={styles.amountInput}
-                  placeholder="0"
-                  keyboardType="numeric"
-                  value={totalAmount}
-                  onChangeText={(text) => {
-                    const numericValue = text.replace(/[^0-9]/g, "");
-                    setTotalAmount(numericValue);
-                  }}
-                />
-              </View>
+              // Calculate how many people have been selected
+              const selectedCount = selectedContributors.size;
+              const pendingCount = contributors.length - selectedCount;
 
-              <View style={styles.helperRow}>
-                <Caption style={styles.helperText}>
-                  Split among {contributors.length} travelers
-                </Caption>
-                <View style={styles.badge}>
-                  <Caption style={styles.badgeText}>
-                    ₹{formatAmount(amountPerPerson)} / person
-                  </Caption>
-                </View>
-              </View>
+              return (
+                <ScrollView contentContainerStyle={styles.content}>
+                  {/* Additional Amount Needed Card */}
+                  <View style={styles.inputSection}>
+                    <Caption style={styles.statusLabel}>
+                      ADDITIONAL AMOUNT NEEDED
+                    </Caption>
 
-              {/* Quick Amount Chips */}
-              <View style={styles.chipContainer}>
-                {quickAmounts.map((amount) => (
-                  <TouchableOpacity
-                    key={amount}
-                    style={[
-                      styles.chip,
-                      totalAmount === amount.toString() && styles.selectedChip,
-                    ]}
-                    onPress={() => setTotalAmount(amount.toString())}
-                  >
-                    <Text
-                      style={[
-                        styles.chipText,
-                        totalAmount === amount.toString() &&
-                          styles.selectedChipText,
-                      ]}
-                    >
-                      +₹{amount}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </View>
-
-            {/* Divider */}
-            <View style={styles.dividerContainer}>
-              <View style={styles.divider} />
-              <Text style={styles.dividerText}>LIST</Text>
-              <View style={styles.divider} />
-            </View>
-
-            {/* Contributor List Section */}
-            <View style={styles.contributorsListSection}>
-              <View style={styles.contributorsListHeader}>
-                <H2 style={styles.contributorsListTitle}>Contributor List</H2>
-                <View style={styles.statusBadge}>
-                  <Caption style={styles.statusText}>
-                    {selectedCount} Paid
-                  </Caption>
-                </View>
-              </View>
-
-              <FlatList
-                data={contributors}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => (
-                  <View style={styles.contributorItem}>
-                    <View style={styles.contributorInfo}>
-                      <TouchableOpacity
-                        style={[
-                          styles.checkbox,
-                          selectedContributors.has(item.id) &&
-                            styles.checkboxChecked,
-                        ]}
-                        onPress={() => toggleContributorSelection(item.id)}
-                      >
-                        {selectedContributors.has(item.id) && (
-                          <Icon
-                            name="check"
-                            size={14}
-                            color={COLORS.textInverse}
-                          />
-                        )}
-                      </TouchableOpacity>
-
-                      <View style={styles.avatar}>
-                        <Text style={styles.avatarText}>
-                          {item.name.charAt(0)}
-                        </Text>
+                    {/* Amount Input */}
+                    <View style={styles.amountInputContainer}>
+                      <View style={styles.currencyWrapper}>
+                        <Text style={styles.currencySymbol}>₹</Text>
                       </View>
+                      <InputField
+                        placeholder="0"
+                        value={values.totalAmount}
+                        onChangeText={(text) => {
+                          const numericValue = text.replace(/[^0-9]/g, "");
+                          setFieldValue("totalAmount", numericValue);
+                        }}
+                        onBlur={handleBlur("totalAmount")}
+                        keyboardType="numeric"
+                        containerStyle={styles.amountInputContainerStyle}
+                        inputContainerStyle={styles.amountInputFieldContainer}
+                        inputStyle={styles.amountInputField}
+                      />
+                    </View>
 
-                      <View style={styles.contributorDetails}>
-                        <P style={styles.contributorName}>{item.name}</P>
+                    {touched.totalAmount && errors.totalAmount && (
+                      <Caption style={styles.errorText}>
+                        {errors.totalAmount}
+                      </Caption>
+                    )}
 
-                        {selectedContributors.has(item.id) ? (
-                          <View style={styles.paymentMethodContainer}>
-                            {item.paymentMethod ? (
-                              <View style={styles.paymentMethodInfo}>
-                                <Caption style={styles.paymentMethodLabel}>
-                                  Paid via {item.paymentMethod.toLowerCase()}
-                                </Caption>
-                                <Icon
-                                  name={
-                                    item.paymentMethod === "CASH"
-                                      ? "money"
-                                      : "wifi"
-                                  }
-                                  size={14}
-                                  color={COLORS.success}
-                                  style={styles.paymentMethodIcon}
-                                />
-                              </View>
-                            ) : (
-                              <View style={styles.paymentMethodSelection}>
-                                <TouchableOpacity
-                                  style={[
-                                    styles.paymentChip,
-                                    item.paymentMethod === "CASH" &&
-                                      styles.selectedPaymentChip,
-                                  ]}
-                                  onPress={() =>
-                                    updatePaymentMethod(item.id, "CASH")
-                                  }
-                                >
-                                  <Icon
-                                    name="money"
-                                    size={14}
-                                    color={
-                                      item.paymentMethod === "CASH"
-                                        ? COLORS.success
-                                        : COLORS.textSecondary
-                                    }
-                                  />
-                                  <Caption
-                                    style={[
-                                      styles.paymentChipText,
-                                      item.paymentMethod === "CASH" &&
-                                        styles.selectedPaymentChipText,
-                                    ]}
-                                  >
-                                    Cash
-                                  </Caption>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
-                                  style={[
-                                    styles.paymentChip,
-                                    item.paymentMethod === "ONLINE" &&
-                                      styles.selectedPaymentChip,
-                                  ]}
-                                  onPress={() =>
-                                    updatePaymentMethod(item.id, "ONLINE")
-                                  }
-                                >
-                                  <Icon
-                                    name="wifi"
-                                    size={14}
-                                    color={
-                                      item.paymentMethod === "ONLINE"
-                                        ? COLORS.success
-                                        : COLORS.textSecondary
-                                    }
-                                  />
-                                  <Caption
-                                    style={[
-                                      styles.paymentChipText,
-                                      item.paymentMethod === "ONLINE" &&
-                                        styles.selectedPaymentChipText,
-                                    ]}
-                                  >
-                                    Online
-                                  </Caption>
-                                </TouchableOpacity>
-                              </View>
-                            )}
-                          </View>
-                        ) : (
-                          <Caption style={styles.pendingStatus}>
-                            Pending
-                          </Caption>
-                        )}
+                    <View style={styles.helperRow}>
+                      <Caption style={styles.helperText}>
+                        Split among {contributors.length} travelers
+                      </Caption>
+                      <View style={styles.badge}>
+                        <Caption style={styles.badgeText}>
+                          ₹{formatAmount(amountPerPerson)} / person
+                        </Caption>
                       </View>
                     </View>
 
-                    <Caption style={styles.contributorAmount}>
-                      ₹{formatAmount(amountPerPerson)}
-                    </Caption>
+                    {/* Quick Amount Chips */}
+                    <View style={styles.chipContainer}>
+                      {quickAmounts.map((amount) => (
+                        <TouchableOpacity
+                          key={amount}
+                          style={[
+                            styles.chip,
+                            values.totalAmount === amount.toString() &&
+                              styles.selectedChip,
+                          ]}
+                          onPress={() =>
+                            setFieldValue("totalAmount", amount.toString())
+                          }
+                        >
+                          <Text
+                            style={[
+                              styles.chipText,
+                              values.totalAmount === amount.toString() &&
+                                styles.selectedChipText,
+                            ]}
+                          >
+                            +₹{amount}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
                   </View>
-                )}
-                scrollEnabled={false}
-              />
-            </View>
 
-            {/* Reminder Info */}
-            {pendingCount > 0 && (
-              <View style={styles.reminderSection}>
-                <View style={styles.reminderRow}>
-                  <Icon
-                    name="notifications"
-                    size={16}
-                    color={COLORS.buttonGradientEnd}
-                    style={styles.reminderIcon}
-                  />
-                  <Caption style={styles.reminderText}>
-                    Send reminders to {pendingCount} people
-                  </Caption>
-                </View>
-              </View>
-            )}
-          </ScrollView>
+                  {/* Divider */}
+                  <View style={styles.dividerContainer}>
+                    <View style={styles.divider} />
+                    <Text style={styles.dividerText}>LIST</Text>
+                    <View style={styles.divider} />
+                  </View>
 
-          {/* Primary Action Button */}
-          <View style={styles.actionSection}>
-            <TouchableOpacity
-              style={styles.confirmButton}
-              onPress={handleAddFunds}
-              disabled={!totalAmount || selectedCount === 0}
-              opacity={!totalAmount || selectedCount === 0 ? 0.5 : 1}
-            >
-              <Text style={styles.confirmButtonText}>
-                Update Wallet Balance
-              </Text>
-              <MaterialDesignIcons
-                name="wallet"
-                size={20}
-                color={COLORS.textInverse}
-                style={styles.confirmButtonIcon}
-              />
-            </TouchableOpacity>
-          </View>
+                  {/* Contributor List Section */}
+                  <View style={styles.contributorsListSection}>
+                    <View style={styles.contributorsListHeader}>
+                      <H2 style={styles.contributorsListTitle}>
+                        Contributor List
+                      </H2>
+                      <View style={styles.statusBadge}>
+                        <Caption style={styles.statusText}>
+                          {selectedCount} Paid
+                        </Caption>
+                      </View>
+                    </View>
+
+                    <FlatList
+                      data={contributors}
+                      keyExtractor={(item) => item.id.toString()}
+                      renderItem={({ item }) => (
+                        <View style={styles.contributorItem}>
+                          <View style={styles.contributorInfo}>
+                            <TouchableOpacity
+                              style={[
+                                styles.checkbox,
+                                selectedContributors.has(item.id) &&
+                                  styles.checkboxChecked,
+                              ]}
+                              onPress={() =>
+                                toggleContributorSelection(item.id)
+                              }
+                            >
+                              {selectedContributors.has(item.id) && (
+                                <Icon
+                                  name="check"
+                                  size={14}
+                                  color={COLORS.textInverse}
+                                />
+                              )}
+                            </TouchableOpacity>
+
+                            <View style={styles.avatar}>
+                              <Text style={styles.avatarText}>
+                                {item.name.charAt(0)}
+                              </Text>
+                            </View>
+
+                            <View style={styles.contributorDetails}>
+                              <P style={styles.contributorName}>{item.name}</P>
+
+                              {selectedContributors.has(item.id) ? (
+                                <View style={styles.paymentMethodContainer}>
+                                  {item.paymentMethod ? (
+                                    <View style={styles.paymentMethodInfo}>
+                                      <Caption
+                                        style={styles.paymentMethodLabel}
+                                      >
+                                        Paid via{" "}
+                                        {item.paymentMethod.toLowerCase()}
+                                      </Caption>
+                                      <Icon
+                                        name={
+                                          item.paymentMethod === "CASH"
+                                            ? "money"
+                                            : "wifi"
+                                        }
+                                        size={14}
+                                        color={COLORS.success}
+                                        style={styles.paymentMethodIcon}
+                                      />
+                                    </View>
+                                  ) : (
+                                    <View style={styles.paymentMethodSelection}>
+                                      <TouchableOpacity
+                                        style={[
+                                          styles.paymentChip,
+                                          item.paymentMethod === "CASH" &&
+                                            styles.selectedPaymentChip,
+                                        ]}
+                                        onPress={() =>
+                                          updatePaymentMethod(item.id, "CASH")
+                                        }
+                                      >
+                                        <Icon
+                                          name="money"
+                                          size={14}
+                                          color={
+                                            item.paymentMethod === "CASH"
+                                              ? COLORS.success
+                                              : COLORS.textSecondary
+                                          }
+                                        />
+                                        <Caption
+                                          style={[
+                                            styles.paymentChipText,
+                                            item.paymentMethod === "CASH" &&
+                                              styles.selectedPaymentChipText,
+                                          ]}
+                                        >
+                                          Cash
+                                        </Caption>
+                                      </TouchableOpacity>
+
+                                      <TouchableOpacity
+                                        style={[
+                                          styles.paymentChip,
+                                          item.paymentMethod === "ONLINE" &&
+                                            styles.selectedPaymentChip,
+                                        ]}
+                                        onPress={() =>
+                                          updatePaymentMethod(item.id, "ONLINE")
+                                        }
+                                      >
+                                        <Icon
+                                          name="wifi"
+                                          size={14}
+                                          color={
+                                            item.paymentMethod === "ONLINE"
+                                              ? COLORS.success
+                                              : COLORS.textSecondary
+                                          }
+                                        />
+                                        <Caption
+                                          style={[
+                                            styles.paymentChipText,
+                                            item.paymentMethod === "ONLINE" &&
+                                              styles.selectedPaymentChipText,
+                                          ]}
+                                        >
+                                          Online
+                                        </Caption>
+                                      </TouchableOpacity>
+                                    </View>
+                                  )}
+                                </View>
+                              ) : (
+                                <Caption style={styles.pendingStatus}>
+                                  Pending
+                                </Caption>
+                              )}
+                            </View>
+                          </View>
+
+                          <Caption style={styles.contributorAmount}>
+                            ₹{formatAmount(amountPerPerson)}
+                          </Caption>
+                        </View>
+                      )}
+                      scrollEnabled={false}
+                    />
+                  </View>
+
+                  {/* Reminder Info */}
+                  {pendingCount > 0 && (
+                    <View style={styles.reminderSection}>
+                      <View style={styles.reminderRow}>
+                        <Icon
+                          name="notifications"
+                          size={16}
+                          color={COLORS.buttonGradientEnd}
+                          style={styles.reminderIcon}
+                        />
+                        <Caption style={styles.reminderText}>
+                          Send reminders to {pendingCount} people
+                        </Caption>
+                      </View>
+                    </View>
+                  )}
+
+                  {/* Primary Action Button */}
+                  <View style={styles.actionSection}>
+                    <TouchableOpacity
+                      style={styles.confirmButton}
+                      onPress={handleSubmit}
+                      disabled={
+                        !isValid || selectedCount === 0 || !values.totalAmount
+                      }
+                      opacity={
+                        !isValid || selectedCount === 0 || !values.totalAmount
+                          ? 0.5
+                          : 1
+                      }
+                    >
+                      <Text style={styles.confirmButtonText}>
+                        Update Wallet Balance
+                      </Text>
+                      <MaterialDesignIcons
+                        name="wallet"
+                        size={20}
+                        color={COLORS.textInverse}
+                        style={styles.confirmButtonIcon}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                </ScrollView>
+              );
+            }}
+          </Formik>
         </View>
       </View>
     </Modal>
@@ -456,20 +515,32 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 8,
   },
+  currencyWrapper: {
+    marginRight: 8,
+    justifyContent: "center",
+  },
   currencySymbol: {
     fontSize: 28,
     fontWeight: "600",
     color: COLORS.primary,
     fontFamily: "PlayfairDisplay",
   },
-  amountInput: {
+  amountInputContainerStyle: {
     flex: 1,
+  },
+  amountInputFieldContainer: {
+    height: "auto",
+    minHeight: 48,
+    alignItems: "center",
+    paddingHorizontal: 0,
+  },
+  amountInputField: {
     fontSize: 28,
     fontWeight: "600",
     color: COLORS.text,
     fontFamily: "PlayfairDisplay",
     paddingHorizontal: 8,
-    paddingVertical: 0,
+    paddingVertical: 8,
   },
   helperRow: {
     flexDirection: "row",
@@ -707,6 +778,13 @@ const styles = StyleSheet.create({
   },
   confirmButtonIcon: {
     marginRight: 8,
+  },
+  errorText: {
+    color: COLORS.error,
+    fontSize: 12,
+    marginLeft: 2,
+    marginTop: 4,
+    marginBottom: 4,
   },
 });
 
